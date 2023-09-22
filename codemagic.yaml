@@ -5,6 +5,7 @@ workflows:
     instance_type: mac_mini_m1
     environment:
       groups:
+        - github # Includes GITHUB_SSH_KEY
         - google_play # Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
         # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
       android_signing:
@@ -19,6 +20,10 @@ workflows:
           include: true
           source: true
     scripts:
+      - name: Setup GitHub access
+        script: |
+          echo $GITHUB_SSH_KEY >> ~/.ssh./id_rsa
+          git remote set-url origin git@github.com:OliverRM/mind-app.git
       - name: Install npm dependencies
         script: |
           npm ci
@@ -45,11 +50,7 @@ workflows:
           cd android
 
           # Calculate new build number
-          LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name 'de.mindakademie.app')
-          if [ -z LATEST_GOOGLE_PLAY_BUILD_NUMBER ]; then
-            exit 1
-          fi
-          STORE_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
+          STORE_BUILD_NUMBER=1
           echo "New build number: $STORE_BUILD_NUMBER"
 
           # Start build
@@ -70,6 +71,7 @@ workflows:
     instance_type: mac_mini_m1
     environment:
       groups:
+        - github # Includes GITHUB_SSH_KEY
         - app_store # Includes APP_APPLE_ID
         # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
       ios_signing:
@@ -90,6 +92,10 @@ workflows:
           include: true
           source: true
     scripts:
+      - name: Setup GitHub access
+        script: |
+          echo $GITHUB_SSH_KEY >> ~/.ssh./id_rsa
+          git remote set-url origin git@github.com:OliverRM/mind-app.git
       - name: Install npm dependencies for Ionic project
         script: |
           npm ci
@@ -110,11 +116,7 @@ workflows:
           #!/bin/sh
           set -e
           set -x
-          LATEST_APP_STORE_BUILD_NUMBER=$(app-store-connect get-latest-build-number $APP_APPLE_ID)
-          if [ -z LATEST_APP_STORE_BUILD_NUMBER ]; then
-            exit 1
-          fi
-          STORE_BUILD_NUMBER=$(($LATEST_APP_STORE_BUILD_NUMBER + 1))
+          STORE_BUILD_NUMBER=1
           echo "New build number: $STORE_BUILD_NUMBER"
 
           cd $CM_BUILD_DIR/ios/App
