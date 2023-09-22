@@ -47,12 +47,9 @@ function App() {
 
   return (
     <div className="flex h-screen">
+      <div className="absolute top-[calc(-100rem+var(--safe-area-inset-top))] h-[100rem] w-full border-b bg-[#274E90]" />
       <div
-        className="w-12 flex-shrink-0 overflow-y-scroll border-r bg-[#F2F2F2] pr-2"
-        style={{
-          paddingTop: "5.5rem",
-          paddingBottom: "1rem",
-        }}
+        className="scrollbar-hide mt-[var(--safe-area-inset-top)] w-[calc(2rem+var(--safe-area-inset-left))] flex-shrink-0 overflow-y-scroll border-r bg-[#F2F2F2] pb-[var(--safe-area-inset-bottom)] pr-1 pt-[4.5rem]"
         ref={(el) => {
           scrollRefs.current["__time__"] = el!;
         }}
@@ -64,24 +61,25 @@ function App() {
             style={{ height: hourHeight, transform: "translateY(-0.3rem)" }}
             key={i}
           >
-            {i + hourOffset}:00
+            {i + hourOffset}
+            <sup>00</sup>
           </div>
         ))}
       </div>
-      <div className="flex snap-x snap-mandatory gap-3 overflow-x-scroll p-4">
+      <div className="mt-[var(--safe-area-inset-top)] flex snap-x snap-mandatory scroll-pl-2 divide-x overflow-x-scroll pr-[var(--safe-area-inset-right)]">
         {sessionsQuery.data.days.map(
           ({ id: dayId, date, sessions, comments }) => (
             <div
-              className="flex w-full flex-shrink-0 snap-center flex-col border bg-[#F2F2F2]"
+              className="flex w-[calc(100%+var(--safe-area-inset-right)-0.5rem-max(0.5rem,var(--safe-area-inset-right)))] max-w-2xl flex-shrink-0 snap-start flex-col bg-[#F2F2F2]"
               key={dayId}
             >
               <div className="h-6 flex-shrink-0 border-b bg-[#274E90] text-center text-white">
                 {moment(date).locale("de").format("dddd")}
               </div>
-              <div className="flex h-12 flex-shrink-0 divide-x border-b text-sm text-white">
+              <div className="flex h-12 flex-shrink-0 divide-x border-b bg-[#6487DC] text-sm text-white">
                 {sessionsQuery.data.rooms.map((r) => (
                   <div
-                    className="flex flex-1 content-center items-center bg-[#6487DC] text-center"
+                    className="flex flex-1 items-center justify-center text-center"
                     key={r.id}
                   >
                     {r.name}
@@ -96,10 +94,11 @@ function App() {
                 onScroll={onScroll}
               >
                 <div
-                  className="relative overflow-clip"
+                  className="relative w-full overflow-clip"
                   style={{
-                    height: `calc(${24 - hourOffset} * ${hourHeight})`,
-                    width: "100%",
+                    height: `calc(${
+                      24 - hourOffset
+                    } * ${hourHeight} + var(--safe-area-inset-bottom))`,
                   }}
                 >
                   {sessions!
@@ -111,17 +110,16 @@ function App() {
                           position: "absolute",
                           top: `calc(${getSessionHeight(s.time_start!)} - 1px)`,
                           left: `calc(${
-                            (s
+                            s
                               .rooms!.map((room) =>
                                 roomPositions.indexOf(room!.rooms_id!.id),
                               )
                               .reduce((a, b) => (a < b ? a : b)) /
-                              roomPositions.length) *
-                            100
-                          }% - 1px`,
+                            roomPositions.length
+                          }* (100% + 1px) - 1px`,
                           width: `calc(${
-                            (s.rooms!.length / roomPositions.length) * 100
-                          }% + 1px)`,
+                            s.rooms!.length / roomPositions.length
+                          } * (100% + 1px) + 1px)`,
                           height: `calc(${getSessionHeight(
                             s.time_start!,
                             s.time_end!,
