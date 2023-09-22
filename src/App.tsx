@@ -1,6 +1,7 @@
 import moment from "moment";
 import "moment/locale/de";
 import { useRef } from "react";
+import { ErrorScreen, LoadingScreen } from "./InfoScreen";
 import { useGetSessionsQuery } from "./directus";
 
 const dataSource = {
@@ -40,13 +41,10 @@ function App() {
 
   const sessionsQuery = useGetSessionsQuery(dataSource, {});
 
-  if (sessionsQuery.isLoading) {
-    return <div>Loading...</div>;
-  }
+  if (sessionsQuery.isLoading) return <LoadingScreen />;
 
-  if (!sessionsQuery.data) {
-    return <div>Something went wrong</div>;
-  }
+  if (!sessionsQuery.data)
+    return <ErrorScreen onClick={() => sessionsQuery.refetch()} />;
 
   const roomPositions = sessionsQuery.data.rooms.map((r) => r.id);
 
