@@ -27,10 +27,15 @@ const getSessionHeight = (start: string, end?: string) =>
 
 function App() {
   const scrollRefs = useRef<{ [key: string]: HTMLDivElement }>({});
+  const scrollElem = useRef<{ elem: HTMLDivElement | null }>({ elem: null });
 
+  const onScrollTouchStart = (e: React.TouchEvent<HTMLDivElement>) =>
+    (scrollElem.current.elem = e.currentTarget);
   const onScroll = (e: React.UIEvent<HTMLDivElement>) =>
     Object.values(scrollRefs.current).forEach(
-      (el) => (el.scrollTop = e.currentTarget.scrollTop),
+      (el) =>
+        el !== scrollElem.current.elem &&
+        (el.scrollTop = e.currentTarget.scrollTop),
     );
 
   const sessionsQuery = useGetSessionsQuery(dataSource, {});
@@ -54,6 +59,7 @@ function App() {
           scrollRefs.current["__time__"] = el!;
         }}
         onScroll={onScroll}
+        onTouchStart={onScrollTouchStart}
       >
         {Array.from({ length: 24 - hourOffset }, (_, i) => (
           <div
@@ -87,14 +93,15 @@ function App() {
                 ))}
               </div>
               <div
-                className="flex-grow overflow-y-scroll"
+                className="flex-grow overflow-x-hidden overflow-y-scroll"
                 ref={(el) => {
                   scrollRefs.current[dayId] = el!;
                 }}
                 onScroll={onScroll}
+                onTouchStart={onScrollTouchStart}
               >
                 <div
-                  className="relative w-full overflow-clip"
+                  className="relative w-full overflow-hidden"
                   style={{
                     height: `calc(${
                       24 - hourOffset
