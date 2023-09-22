@@ -80,10 +80,15 @@ function App() {
               <div className="h-6 flex-shrink-0 border-b bg-[#274E90] text-center text-white">
                 {moment(date).locale("de").format("dddd")}
               </div>
-              <div className="flex h-12 flex-shrink-0 divide-x border-b bg-[#6487DC] text-sm text-white">
+              <div
+                className="flex h-12 flex-shrink-0 divide-x overflow-y-scroll border-b bg-[#6487DC] text-sm text-white"
+                style={{
+                  scrollbarGutter: "stable",
+                }}
+              >
                 {sessionsQuery.data.rooms.map((r) => (
                   <div
-                    className="flex flex-1 items-center justify-center text-center"
+                    className="flex flex-1 items-center justify-center overflow-y-hidden text-center"
                     key={r.id}
                   >
                     {r.name}
