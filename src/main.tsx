@@ -5,6 +5,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { queryClient } from "./query.ts";
+import { SettingsContextProvider } from "./settings.tsx";
 
 const setSafeArea = (data: SafeAreaInsets) => {
   const { insets } = data;
@@ -22,8 +23,10 @@ SafeArea?.getSafeAreaInsets().then(setSafeArea);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <App />
-    </QueryClientProvider>
+    <SettingsContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
+    </SettingsContextProvider>
   </React.StrictMode>,
 );

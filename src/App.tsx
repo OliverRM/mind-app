@@ -5,6 +5,7 @@ import { ErrorScreen, LoadingScreen } from "./InfoScreen";
 import SessionDetails, { SessionPreview } from "./SessionDetails";
 import { useGetSessionsGroupedByDayQuery } from "./directus";
 import { dataSource } from "./query";
+import { useGetWatchesSession } from "./settings";
 
 const hourOffset = 7;
 const hourHeight = "4rem";
@@ -19,6 +20,8 @@ const getSessionHeight = (start: string, end?: string) =>
     ${hourHeight})`;
 
 function App() {
+  const getWatchesSession = useGetWatchesSession();
+
   const scrollRefs = useRef<{ [key: string]: HTMLDivElement }>({});
   const scrollElem = useRef<{ elem: HTMLDivElement | null }>({ elem: null });
 
@@ -132,6 +135,9 @@ function App() {
                           )} + 1px)`,
                           backgroundColor: s.type!.background_color!,
                           color: s.type!.text_color!,
+                          boxShadow: getWatchesSession(s.id)
+                            ? "rgb(255 169 0) 0px 0px 12px 1px inset"
+                            : undefined,
                         }}
                         onClick={() => setSelectedSession(s)}
                         key={s.id}

@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { Close, Star } from "./Icons";
 import { useGetSessionByIdQuery } from "./directus";
 import { dataSource } from "./query";
+import { useGetWatchesSession, useSetWatchesSession } from "./settings";
 
 export type SessionPreview = {
   __typename?: "sessions";
@@ -32,11 +32,12 @@ const SessionDetails = (params: {
   session: SessionPreview;
   onClose?: React.MouseEventHandler<HTMLButtonElement>;
 }) => {
+  const getWatchesSession = useGetWatchesSession();
+  const setWatchesSession = useSetWatchesSession();
+
   const query = useGetSessionByIdQuery(dataSource, {
     sessionId: params.session.id,
   });
-
-  const [watched, setWatched] = useState(false);
 
   const sessionP = params.session;
   const sessionQ = query.data?.sessions_by_id;
@@ -81,9 +82,11 @@ const SessionDetails = (params: {
             </div>
           </div>
           <Star
-            filled={watched}
+            filled={getWatchesSession(sessionP.id)}
             className="h-8 text-amber-500"
-            onClick={() => setWatched(!watched)}
+            onClick={() =>
+              setWatchesSession(sessionP.id, !getWatchesSession(sessionP.id))
+            }
           />
         </div>
         {session.cancelled ? (
