@@ -1,7 +1,8 @@
 import moment from "moment";
 import "moment/locale/de";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { ErrorScreen, LoadingScreen } from "./InfoScreen";
+import SessionDetails, { SessionPreview } from "./SessionDetails";
 import { useGetSessionsGroupedByDayQuery } from "./directus";
 import { dataSource } from "./query";
 
@@ -29,6 +30,10 @@ function App() {
         el !== scrollElem.current.elem &&
         (el.scrollTop = e.currentTarget.scrollTop),
     );
+
+  const [selectedSession, setSelectedSession] = useState<SessionPreview | null>(
+    null,
+  );
 
   const sessionsQuery = useGetSessionsGroupedByDayQuery(dataSource, {});
 
@@ -128,6 +133,7 @@ function App() {
                           backgroundColor: s.type!.background_color!,
                           color: s.type!.text_color!,
                         }}
+                        onClick={() => setSelectedSession(s)}
                         key={s.id}
                       >
                         {s.type!.requires_referee ? (
@@ -172,6 +178,12 @@ function App() {
           ),
         )}
       </div>
+      {selectedSession && (
+        <SessionDetails
+          session={selectedSession}
+          onClose={() => setSelectedSession(null)}
+        />
+      )}
     </div>
   );
 }
