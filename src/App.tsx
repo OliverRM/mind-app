@@ -2,17 +2,8 @@ import moment from "moment";
 import "moment/locale/de";
 import { useRef } from "react";
 import { ErrorScreen, LoadingScreen } from "./InfoScreen";
-import { useGetSessionsQuery } from "./directus";
-
-const dataSource = {
-  endpoint: "https://d2pmqswy9qlmav.cloudfront.net/graphql",
-  fetchParams: {
-    headers: {
-      Authorization: "bearer pE7rJIQGFrku4_lNGQ6EnFEJmEKv-WH7",
-      "Content-Type": "application/json",
-    },
-  },
-};
+import { useGetSessionsGroupedByDayQuery } from "./directus";
+import { dataSource } from "./query";
 
 const hourOffset = 7;
 const hourHeight = "4rem";
@@ -39,7 +30,7 @@ function App() {
         (el.scrollTop = e.currentTarget.scrollTop),
     );
 
-  const sessionsQuery = useGetSessionsQuery(dataSource, {});
+  const sessionsQuery = useGetSessionsGroupedByDayQuery(dataSource, {});
 
   if (sessionsQuery.isLoading) return <LoadingScreen />;
 

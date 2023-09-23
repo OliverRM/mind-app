@@ -56,9 +56,6 @@ export type Query = {
   sessions_rooms: Array<Sessions_Rooms>;
   sessions_rooms_by_id?: Maybe<Sessions_Rooms>;
   sessions_rooms_aggregated: Array<Sessions_Rooms_Aggregated>;
-  sessions: Array<Sessions>;
-  sessions_by_id?: Maybe<Sessions>;
-  sessions_aggregated: Array<Sessions_Aggregated>;
   comments_rooms: Array<Comments_Rooms>;
   comments_rooms_by_id?: Maybe<Comments_Rooms>;
   comments_rooms_aggregated: Array<Comments_Rooms_Aggregated>;
@@ -68,6 +65,9 @@ export type Query = {
   session_types: Array<Session_Types>;
   session_types_by_id?: Maybe<Session_Types>;
   session_types_aggregated: Array<Session_Types_Aggregated>;
+  sessions: Array<Sessions>;
+  sessions_by_id?: Maybe<Sessions>;
+  sessions_aggregated: Array<Sessions_Aggregated>;
 };
 
 
@@ -141,32 +141,6 @@ export type QuerySessions_Rooms_By_IdArgs = {
 export type QuerySessions_Rooms_AggregatedArgs = {
   groupBy?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   filter?: InputMaybe<Sessions_Rooms_Filter>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  page?: InputMaybe<Scalars['Int']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
-  sort?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-};
-
-
-export type QuerySessionsArgs = {
-  filter?: InputMaybe<Sessions_Filter>;
-  sort?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  page?: InputMaybe<Scalars['Int']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QuerySessions_By_IdArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type QuerySessions_AggregatedArgs = {
-  groupBy?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  filter?: InputMaybe<Sessions_Filter>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -252,11 +226,38 @@ export type QuerySession_Types_AggregatedArgs = {
   sort?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
+
+export type QuerySessionsArgs = {
+  filter?: InputMaybe<Sessions_Filter>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerySessions_By_IdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QuerySessions_AggregatedArgs = {
+  groupBy?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  filter?: InputMaybe<Sessions_Filter>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
 export type Days = {
   __typename?: 'days';
   id: Scalars['ID']['output'];
   date?: Maybe<Scalars['Date']['output']>;
   date_func?: Maybe<Date_Functions>;
+  display?: Maybe<Scalars['String']['output']>;
   sessions?: Maybe<Array<Maybe<Sessions>>>;
   sessions_func?: Maybe<Count_Functions>;
   comments?: Maybe<Array<Maybe<Comments>>>;
@@ -309,6 +310,10 @@ export type Sessions = {
   time_end?: Maybe<Scalars['String']['output']>;
   time_end_func?: Maybe<Time_Functions>;
   day?: Maybe<Days>;
+  cancelled?: Maybe<Scalars['Boolean']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  referee_long?: Maybe<Scalars['String']['output']>;
+  title_long?: Maybe<Scalars['String']['output']>;
   rooms?: Maybe<Array<Maybe<Sessions_Rooms>>>;
   rooms_func?: Maybe<Count_Functions>;
 };
@@ -723,6 +728,7 @@ export type Days_Filter = {
   id?: InputMaybe<Number_Filter_Operators>;
   date?: InputMaybe<Date_Filter_Operators>;
   date_func?: InputMaybe<Date_Function_Filter_Operators>;
+  display?: InputMaybe<String_Filter_Operators>;
   sessions?: InputMaybe<Sessions_Filter>;
   sessions_func?: InputMaybe<Count_Function_Filter_Operators>;
   comments?: InputMaybe<Comments_Filter>;
@@ -755,6 +761,10 @@ export type Sessions_Filter = {
   time_end?: InputMaybe<String_Filter_Operators>;
   time_end_func?: InputMaybe<Time_Function_Filter_Operators>;
   day?: InputMaybe<Days_Filter>;
+  cancelled?: InputMaybe<Boolean_Filter_Operators>;
+  description?: InputMaybe<String_Filter_Operators>;
+  referee_long?: InputMaybe<String_Filter_Operators>;
+  title_long?: InputMaybe<String_Filter_Operators>;
   rooms?: InputMaybe<Sessions_Rooms_Filter>;
   rooms_func?: InputMaybe<Count_Function_Filter_Operators>;
   _and?: InputMaybe<Array<InputMaybe<Sessions_Filter>>>;
@@ -945,6 +955,7 @@ export type Days_Aggregated_Count = {
   __typename?: 'days_aggregated_count';
   id?: Maybe<Scalars['Int']['output']>;
   date?: Maybe<Scalars['Int']['output']>;
+  display?: Maybe<Scalars['Int']['output']>;
   sessions?: Maybe<Scalars['Int']['output']>;
   comments?: Maybe<Scalars['Int']['output']>;
 };
@@ -1007,43 +1018,6 @@ export type Sessions_Rooms_Aggregated_Fields = {
   id?: Maybe<Scalars['Float']['output']>;
   sessions_id?: Maybe<Scalars['Float']['output']>;
   rooms_id?: Maybe<Scalars['Float']['output']>;
-};
-
-export type Sessions_Aggregated = {
-  __typename?: 'sessions_aggregated';
-  group?: Maybe<Scalars['JSON']['output']>;
-  countAll?: Maybe<Scalars['Int']['output']>;
-  count?: Maybe<Sessions_Aggregated_Count>;
-  countDistinct?: Maybe<Sessions_Aggregated_Count>;
-  avg?: Maybe<Sessions_Aggregated_Fields>;
-  sum?: Maybe<Sessions_Aggregated_Fields>;
-  avgDistinct?: Maybe<Sessions_Aggregated_Fields>;
-  sumDistinct?: Maybe<Sessions_Aggregated_Fields>;
-  min?: Maybe<Sessions_Aggregated_Fields>;
-  max?: Maybe<Sessions_Aggregated_Fields>;
-};
-
-export type Sessions_Aggregated_Count = {
-  __typename?: 'sessions_aggregated_count';
-  id?: Maybe<Scalars['Int']['output']>;
-  user_created?: Maybe<Scalars['Int']['output']>;
-  date_created?: Maybe<Scalars['Int']['output']>;
-  user_updated?: Maybe<Scalars['Int']['output']>;
-  date_updated?: Maybe<Scalars['Int']['output']>;
-  title?: Maybe<Scalars['Int']['output']>;
-  referee?: Maybe<Scalars['Int']['output']>;
-  type?: Maybe<Scalars['Int']['output']>;
-  time_start?: Maybe<Scalars['Int']['output']>;
-  time_end?: Maybe<Scalars['Int']['output']>;
-  day?: Maybe<Scalars['Int']['output']>;
-  rooms?: Maybe<Scalars['Int']['output']>;
-};
-
-export type Sessions_Aggregated_Fields = {
-  __typename?: 'sessions_aggregated_fields';
-  id?: Maybe<Scalars['Float']['output']>;
-  type?: Maybe<Scalars['Float']['output']>;
-  day?: Maybe<Scalars['Float']['output']>;
 };
 
 export type Comments_Rooms_Aggregated = {
@@ -1135,6 +1109,47 @@ export type Session_Types_Aggregated_Fields = {
   id?: Maybe<Scalars['Float']['output']>;
 };
 
+export type Sessions_Aggregated = {
+  __typename?: 'sessions_aggregated';
+  group?: Maybe<Scalars['JSON']['output']>;
+  countAll?: Maybe<Scalars['Int']['output']>;
+  count?: Maybe<Sessions_Aggregated_Count>;
+  countDistinct?: Maybe<Sessions_Aggregated_Count>;
+  avg?: Maybe<Sessions_Aggregated_Fields>;
+  sum?: Maybe<Sessions_Aggregated_Fields>;
+  avgDistinct?: Maybe<Sessions_Aggregated_Fields>;
+  sumDistinct?: Maybe<Sessions_Aggregated_Fields>;
+  min?: Maybe<Sessions_Aggregated_Fields>;
+  max?: Maybe<Sessions_Aggregated_Fields>;
+};
+
+export type Sessions_Aggregated_Count = {
+  __typename?: 'sessions_aggregated_count';
+  id?: Maybe<Scalars['Int']['output']>;
+  user_created?: Maybe<Scalars['Int']['output']>;
+  date_created?: Maybe<Scalars['Int']['output']>;
+  user_updated?: Maybe<Scalars['Int']['output']>;
+  date_updated?: Maybe<Scalars['Int']['output']>;
+  title?: Maybe<Scalars['Int']['output']>;
+  referee?: Maybe<Scalars['Int']['output']>;
+  type?: Maybe<Scalars['Int']['output']>;
+  time_start?: Maybe<Scalars['Int']['output']>;
+  time_end?: Maybe<Scalars['Int']['output']>;
+  day?: Maybe<Scalars['Int']['output']>;
+  cancelled?: Maybe<Scalars['Int']['output']>;
+  description?: Maybe<Scalars['Int']['output']>;
+  referee_long?: Maybe<Scalars['Int']['output']>;
+  title_long?: Maybe<Scalars['Int']['output']>;
+  rooms?: Maybe<Scalars['Int']['output']>;
+};
+
+export type Sessions_Aggregated_Fields = {
+  __typename?: 'sessions_aggregated_fields';
+  id?: Maybe<Scalars['Float']['output']>;
+  type?: Maybe<Scalars['Float']['output']>;
+  day?: Maybe<Scalars['Float']['output']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   create_days_items: Array<Days>;
@@ -1143,14 +1158,14 @@ export type Mutation = {
   create_rooms_item?: Maybe<Rooms>;
   create_sessions_rooms_items: Array<Sessions_Rooms>;
   create_sessions_rooms_item?: Maybe<Sessions_Rooms>;
-  create_sessions_items: Array<Sessions>;
-  create_sessions_item?: Maybe<Sessions>;
   create_comments_rooms_items: Array<Comments_Rooms>;
   create_comments_rooms_item?: Maybe<Comments_Rooms>;
   create_comments_items: Array<Comments>;
   create_comments_item?: Maybe<Comments>;
   create_session_types_items: Array<Session_Types>;
   create_session_types_item?: Maybe<Session_Types>;
+  create_sessions_items: Array<Sessions>;
+  create_sessions_item?: Maybe<Sessions>;
   update_days_items: Array<Days>;
   update_days_batch: Array<Days>;
   update_days_item?: Maybe<Days>;
@@ -1160,9 +1175,6 @@ export type Mutation = {
   update_sessions_rooms_items: Array<Sessions_Rooms>;
   update_sessions_rooms_batch: Array<Sessions_Rooms>;
   update_sessions_rooms_item?: Maybe<Sessions_Rooms>;
-  update_sessions_items: Array<Sessions>;
-  update_sessions_batch: Array<Sessions>;
-  update_sessions_item?: Maybe<Sessions>;
   update_comments_rooms_items: Array<Comments_Rooms>;
   update_comments_rooms_batch: Array<Comments_Rooms>;
   update_comments_rooms_item?: Maybe<Comments_Rooms>;
@@ -1172,20 +1184,23 @@ export type Mutation = {
   update_session_types_items: Array<Session_Types>;
   update_session_types_batch: Array<Session_Types>;
   update_session_types_item?: Maybe<Session_Types>;
+  update_sessions_items: Array<Sessions>;
+  update_sessions_batch: Array<Sessions>;
+  update_sessions_item?: Maybe<Sessions>;
   delete_days_items?: Maybe<Delete_Many>;
   delete_days_item?: Maybe<Delete_One>;
   delete_rooms_items?: Maybe<Delete_Many>;
   delete_rooms_item?: Maybe<Delete_One>;
   delete_sessions_rooms_items?: Maybe<Delete_Many>;
   delete_sessions_rooms_item?: Maybe<Delete_One>;
-  delete_sessions_items?: Maybe<Delete_Many>;
-  delete_sessions_item?: Maybe<Delete_One>;
   delete_comments_rooms_items?: Maybe<Delete_Many>;
   delete_comments_rooms_item?: Maybe<Delete_One>;
   delete_comments_items?: Maybe<Delete_Many>;
   delete_comments_item?: Maybe<Delete_One>;
   delete_session_types_items?: Maybe<Delete_Many>;
   delete_session_types_item?: Maybe<Delete_One>;
+  delete_sessions_items?: Maybe<Delete_Many>;
+  delete_sessions_item?: Maybe<Delete_One>;
 };
 
 
@@ -1237,22 +1252,6 @@ export type MutationCreate_Sessions_Rooms_ItemArgs = {
 };
 
 
-export type MutationCreate_Sessions_ItemsArgs = {
-  filter?: InputMaybe<Sessions_Filter>;
-  sort?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  page?: InputMaybe<Scalars['Int']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
-  data?: InputMaybe<Array<Create_Sessions_Input>>;
-};
-
-
-export type MutationCreate_Sessions_ItemArgs = {
-  data: Create_Sessions_Input;
-};
-
-
 export type MutationCreate_Comments_Rooms_ItemsArgs = {
   filter?: InputMaybe<Comments_Rooms_Filter>;
   sort?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
@@ -1298,6 +1297,22 @@ export type MutationCreate_Session_Types_ItemsArgs = {
 
 export type MutationCreate_Session_Types_ItemArgs = {
   data: Create_Session_Types_Input;
+};
+
+
+export type MutationCreate_Sessions_ItemsArgs = {
+  filter?: InputMaybe<Sessions_Filter>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  data?: InputMaybe<Array<Create_Sessions_Input>>;
+};
+
+
+export type MutationCreate_Sessions_ItemArgs = {
+  data: Create_Sessions_Input;
 };
 
 
@@ -1388,35 +1403,6 @@ export type MutationUpdate_Sessions_Rooms_ItemArgs = {
 };
 
 
-export type MutationUpdate_Sessions_ItemsArgs = {
-  filter?: InputMaybe<Sessions_Filter>;
-  sort?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  page?: InputMaybe<Scalars['Int']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
-  ids: Array<InputMaybe<Scalars['ID']['input']>>;
-  data: Update_Sessions_Input;
-};
-
-
-export type MutationUpdate_Sessions_BatchArgs = {
-  filter?: InputMaybe<Sessions_Filter>;
-  sort?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  page?: InputMaybe<Scalars['Int']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
-  data?: InputMaybe<Array<Update_Sessions_Input>>;
-};
-
-
-export type MutationUpdate_Sessions_ItemArgs = {
-  id: Scalars['ID']['input'];
-  data: Update_Sessions_Input;
-};
-
-
 export type MutationUpdate_Comments_Rooms_ItemsArgs = {
   filter?: InputMaybe<Comments_Rooms_Filter>;
   sort?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
@@ -1504,6 +1490,35 @@ export type MutationUpdate_Session_Types_ItemArgs = {
 };
 
 
+export type MutationUpdate_Sessions_ItemsArgs = {
+  filter?: InputMaybe<Sessions_Filter>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  ids: Array<InputMaybe<Scalars['ID']['input']>>;
+  data: Update_Sessions_Input;
+};
+
+
+export type MutationUpdate_Sessions_BatchArgs = {
+  filter?: InputMaybe<Sessions_Filter>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  data?: InputMaybe<Array<Update_Sessions_Input>>;
+};
+
+
+export type MutationUpdate_Sessions_ItemArgs = {
+  id: Scalars['ID']['input'];
+  data: Update_Sessions_Input;
+};
+
+
 export type MutationDelete_Days_ItemsArgs = {
   ids: Array<InputMaybe<Scalars['ID']['input']>>;
 };
@@ -1530,16 +1545,6 @@ export type MutationDelete_Sessions_Rooms_ItemsArgs = {
 
 
 export type MutationDelete_Sessions_Rooms_ItemArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type MutationDelete_Sessions_ItemsArgs = {
-  ids: Array<InputMaybe<Scalars['ID']['input']>>;
-};
-
-
-export type MutationDelete_Sessions_ItemArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -1573,9 +1578,20 @@ export type MutationDelete_Session_Types_ItemArgs = {
   id: Scalars['ID']['input'];
 };
 
+
+export type MutationDelete_Sessions_ItemsArgs = {
+  ids: Array<InputMaybe<Scalars['ID']['input']>>;
+};
+
+
+export type MutationDelete_Sessions_ItemArgs = {
+  id: Scalars['ID']['input'];
+};
+
 export type Create_Days_Input = {
   id?: InputMaybe<Scalars['ID']['input']>;
   date?: InputMaybe<Scalars['Date']['input']>;
+  display?: InputMaybe<Scalars['String']['input']>;
   sessions?: InputMaybe<Array<InputMaybe<Create_Sessions_Input>>>;
   comments?: InputMaybe<Array<InputMaybe<Create_Comments_Input>>>;
 };
@@ -1592,6 +1608,10 @@ export type Create_Sessions_Input = {
   time_start?: InputMaybe<Scalars['String']['input']>;
   time_end?: InputMaybe<Scalars['String']['input']>;
   day?: InputMaybe<Create_Days_Input>;
+  cancelled?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  referee_long?: InputMaybe<Scalars['String']['input']>;
+  title_long?: InputMaybe<Scalars['String']['input']>;
   rooms?: InputMaybe<Array<InputMaybe<Create_Sessions_Rooms_Input>>>;
 };
 
@@ -1703,6 +1723,7 @@ export type Create_Comments_Rooms_Input = {
 export type Update_Days_Input = {
   id?: InputMaybe<Scalars['ID']['input']>;
   date?: InputMaybe<Scalars['Date']['input']>;
+  display?: InputMaybe<Scalars['String']['input']>;
   sessions?: InputMaybe<Array<InputMaybe<Update_Sessions_Input>>>;
   comments?: InputMaybe<Array<InputMaybe<Update_Comments_Input>>>;
 };
@@ -1719,6 +1740,10 @@ export type Update_Sessions_Input = {
   time_start?: InputMaybe<Scalars['String']['input']>;
   time_end?: InputMaybe<Scalars['String']['input']>;
   day?: InputMaybe<Update_Days_Input>;
+  cancelled?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  referee_long?: InputMaybe<Scalars['String']['input']>;
+  title_long?: InputMaybe<Scalars['String']['input']>;
   rooms?: InputMaybe<Array<InputMaybe<Update_Sessions_Rooms_Input>>>;
 };
 
@@ -1859,10 +1884,10 @@ export type Subscription = {
   days_mutated?: Maybe<Days_Mutated>;
   rooms_mutated?: Maybe<Rooms_Mutated>;
   sessions_rooms_mutated?: Maybe<Sessions_Rooms_Mutated>;
-  sessions_mutated?: Maybe<Sessions_Mutated>;
   comments_rooms_mutated?: Maybe<Comments_Rooms_Mutated>;
   comments_mutated?: Maybe<Comments_Mutated>;
   session_types_mutated?: Maybe<Session_Types_Mutated>;
+  sessions_mutated?: Maybe<Sessions_Mutated>;
 };
 
 
@@ -1966,11 +1991,6 @@ export type SubscriptionSessions_Rooms_MutatedArgs = {
 };
 
 
-export type SubscriptionSessions_MutatedArgs = {
-  event?: InputMaybe<EventEnum>;
-};
-
-
 export type SubscriptionComments_Rooms_MutatedArgs = {
   event?: InputMaybe<EventEnum>;
 };
@@ -1982,6 +2002,11 @@ export type SubscriptionComments_MutatedArgs = {
 
 
 export type SubscriptionSession_Types_MutatedArgs = {
+  event?: InputMaybe<EventEnum>;
+};
+
+
+export type SubscriptionSessions_MutatedArgs = {
   event?: InputMaybe<EventEnum>;
 };
 
@@ -2726,13 +2751,6 @@ export type Sessions_Rooms_Mutated = {
   data?: Maybe<Sessions_Rooms>;
 };
 
-export type Sessions_Mutated = {
-  __typename?: 'sessions_mutated';
-  key: Scalars['ID']['output'];
-  event?: Maybe<EventEnum>;
-  data?: Maybe<Sessions>;
-};
-
 export type Comments_Rooms_Mutated = {
   __typename?: 'comments_rooms_mutated';
   key: Scalars['ID']['output'];
@@ -2754,39 +2772,57 @@ export type Session_Types_Mutated = {
   data?: Maybe<Session_Types>;
 };
 
-export type GetSessionsQueryVariables = Exact<{ [key: string]: never; }>;
+export type Sessions_Mutated = {
+  __typename?: 'sessions_mutated';
+  key: Scalars['ID']['output'];
+  event?: Maybe<EventEnum>;
+  data?: Maybe<Sessions>;
+};
+
+export type GetSessionsGroupedByDayQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetSessionsQuery = { __typename?: 'Query', rooms: Array<{ __typename?: 'rooms', id: string, name?: string | null }>, days: Array<{ __typename?: 'days', id: string, date?: any | null, sessions?: Array<{ __typename?: 'sessions', id: string, title?: string | null, referee?: string | null, time_start?: string | null, time_end?: string | null, type?: { __typename?: 'session_types', requires_referee?: boolean | null, background_color?: string | null, text_color?: string | null } | null, rooms?: Array<{ __typename?: 'sessions_rooms', rooms_id?: { __typename?: 'rooms', id: string } | null } | null> | null } | null> | null, comments?: Array<{ __typename?: 'comments', id: string, content?: string | null, time?: string | null, rooms?: Array<{ __typename?: 'comments_rooms', rooms_id?: { __typename?: 'rooms', id: string } | null } | null> | null } | null> | null }> };
+export type GetSessionsGroupedByDayQuery = { __typename?: 'Query', rooms: Array<{ __typename?: 'rooms', id: string, name?: string | null }>, days: Array<{ __typename?: 'days', id: string, display?: string | null, date?: any | null, sessions?: Array<{ __typename?: 'sessions', id: string, title?: string | null, referee?: string | null, cancelled?: boolean | null, time_start?: string | null, time_end?: string | null, type?: { __typename?: 'session_types', name?: string | null, requires_referee?: boolean | null, background_color?: string | null, text_color?: string | null } | null, rooms?: Array<{ __typename?: 'sessions_rooms', rooms_id?: { __typename?: 'rooms', id: string, name?: string | null } | null } | null> | null } | null> | null, comments?: Array<{ __typename?: 'comments', id: string, content?: string | null, time?: string | null, rooms?: Array<{ __typename?: 'comments_rooms', rooms_id?: { __typename?: 'rooms', id: string } | null } | null> | null } | null> | null }> };
+
+export type GetSessionByIdQueryVariables = Exact<{
+  sessionId: Scalars['ID']['input'];
+}>;
 
 
-export const GetSessionsDocument = `
-    query GetSessions {
+export type GetSessionByIdQuery = { __typename?: 'Query', sessions_by_id?: { __typename?: 'sessions', id: string, title?: string | null, title_long?: string | null, referee?: string | null, referee_long?: string | null, description?: string | null, cancelled?: boolean | null, time_start?: string | null, time_end?: string | null, type?: { __typename?: 'session_types', name?: string | null } | null, day?: { __typename?: 'days', display?: string | null, date?: any | null } | null, rooms?: Array<{ __typename?: 'sessions_rooms', rooms_id?: { __typename?: 'rooms', name?: string | null } | null } | null> | null } | null };
+
+
+export const GetSessionsGroupedByDayDocument = `
+    query GetSessionsGroupedByDay {
   rooms {
     id
     name
   }
   days {
     id
+    display
     date
-    sessions {
+    sessions(sort: ["time_start"]) {
       id
       title
       referee
       type {
+        name
         requires_referee
         background_color
         text_color
       }
+      cancelled
       time_start
       time_end
       rooms {
         rooms_id {
           id
+          name
         }
       }
     }
-    comments {
+    comments(sort: ["time"]) {
       id
       content
       time
@@ -2799,16 +2835,56 @@ export const GetSessionsDocument = `
   }
 }
     `;
-export const useGetSessionsQuery = <
-      TData = GetSessionsQuery,
+export const useGetSessionsGroupedByDayQuery = <
+      TData = GetSessionsGroupedByDayQuery,
       TError = unknown
     >(
       dataSource: { endpoint: string, fetchParams?: RequestInit },
-      variables?: GetSessionsQueryVariables,
-      options?: UseQueryOptions<GetSessionsQuery, TError, TData>
+      variables?: GetSessionsGroupedByDayQueryVariables,
+      options?: UseQueryOptions<GetSessionsGroupedByDayQuery, TError, TData>
     ) =>
-    useQuery<GetSessionsQuery, TError, TData>(
-      variables === undefined ? ['GetSessions'] : ['GetSessions', variables],
-      fetcher<GetSessionsQuery, GetSessionsQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetSessionsDocument, variables),
+    useQuery<GetSessionsGroupedByDayQuery, TError, TData>(
+      variables === undefined ? ['GetSessionsGroupedByDay'] : ['GetSessionsGroupedByDay', variables],
+      fetcher<GetSessionsGroupedByDayQuery, GetSessionsGroupedByDayQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetSessionsGroupedByDayDocument, variables),
+      options
+    );
+export const GetSessionByIdDocument = `
+    query GetSessionById($sessionId: ID!) {
+  sessions_by_id(id: $sessionId) {
+    id
+    title
+    title_long
+    referee
+    referee_long
+    description
+    type {
+      name
+    }
+    cancelled
+    day {
+      display
+      date
+    }
+    time_start
+    time_end
+    rooms {
+      rooms_id {
+        name
+      }
+    }
+  }
+}
+    `;
+export const useGetSessionByIdQuery = <
+      TData = GetSessionByIdQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables: GetSessionByIdQueryVariables,
+      options?: UseQueryOptions<GetSessionByIdQuery, TError, TData>
+    ) =>
+    useQuery<GetSessionByIdQuery, TError, TData>(
+      ['GetSessionById', variables],
+      fetcher<GetSessionByIdQuery, GetSessionByIdQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetSessionByIdDocument, variables),
       options
     );
