@@ -11,7 +11,13 @@ export const dataSource = {
   },
 };
 
-export const queryClient = new QueryClient();
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchInterval: 3 * 60 * 1000,
+    },
+  },
+});
 
 const localStoragePersister = createSyncStoragePersister({
   storage: window.localStorage,
