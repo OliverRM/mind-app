@@ -49,7 +49,9 @@ function App() {
 
   return (
     <div className="flex h-screen">
+      {/* Safe area background */}
       <div className="absolute top-[calc(-100rem+var(--safe-area-inset-top))] h-[100rem] w-full border-b" />
+      {/* Title bar */}
       <div className="absolute top-0 h-10 w-full border-b">
         {sessionsQuery.isFetching ? (
           <div className="absolute bottom-1.5 left-0 right-0 text-center italic text-white">
@@ -68,6 +70,7 @@ function App() {
           </div>
         )}
       </div>
+      {/* Time bar */}
       <div
         className="scrollbar-hide mt-[calc(2.5rem+var(--safe-area-inset-top))] w-[calc(2rem+var(--safe-area-inset-left))] flex-shrink-0 overflow-y-scroll border-r bg-[#F2F2F2] pb-[var(--safe-area-inset-bottom)] pr-1 pt-[4.5rem]"
         ref={(el) => {
@@ -87,16 +90,20 @@ function App() {
           </div>
         ))}
       </div>
+      {/* Main content (scrolls horizontally) */}
       <div className="mt-[var(--safe-area-inset-top)] flex snap-x snap-mandatory scroll-pl-2 divide-x overflow-x-scroll pr-[var(--safe-area-inset-right)]">
         {sessionsQuery.data.days.map(
           ({ id: dayId, date, sessions, comments }) => (
+            /* Day column */
             <div
               className="flex w-[calc(100%+var(--safe-area-inset-right)-0.5rem-max(0.5rem,var(--safe-area-inset-right)))] max-w-2xl flex-shrink-0 snap-start flex-col bg-[#F2F2F2]"
               key={dayId}
             >
+              {/* Date header */}
               <div className="h-6 flex-shrink-0 border-b bg-[#274E90] text-center text-white">
                 {moment(date).locale("de").format("dddd")}
               </div>
+              {/* Room headers */}
               <div
                 className="flex h-12 flex-shrink-0 divide-x overflow-y-scroll border-b bg-[#6487DC] text-sm text-white"
                 style={{
@@ -112,6 +119,7 @@ function App() {
                   </div>
                 ))}
               </div>
+              {/* Sessions */}
               <div
                 className="flex-grow overflow-x-hidden overflow-y-scroll"
                 ref={(el) => {
