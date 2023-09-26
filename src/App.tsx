@@ -49,9 +49,27 @@ function App() {
 
   return (
     <div className="flex h-screen">
-      <div className="absolute top-[calc(-100rem+var(--safe-area-inset-top))] h-[100rem] w-full border-b bg-[#274E90]" />
+      <div className="absolute top-[calc(-100rem+var(--safe-area-inset-top))] h-[100rem] w-full border-b" />
+      <div className="absolute top-0 h-10 w-full border-b">
+        {sessionsQuery.isFetching ? (
+          <div className="absolute bottom-1.5 left-0 right-0 text-center italic text-white">
+            Lädt...
+          </div>
+        ) : moment(sessionsQuery.dataUpdatedAt).isBefore(
+            moment().subtract(5, "minutes"),
+          ) ? (
+          <div className="absolute bottom-2 left-0 right-0 text-center text-sm text-white">
+            Zuletzt aktualisiert:{" "}
+            {moment(sessionsQuery.dataUpdatedAt).fromNow()}
+          </div>
+        ) : (
+          <div className="absolute bottom-1.5 left-0 right-0 text-center text-white">
+            Mind-Akademie
+          </div>
+        )}
+      </div>
       <div
-        className="scrollbar-hide mt-[var(--safe-area-inset-top)] w-[calc(2rem+var(--safe-area-inset-left))] flex-shrink-0 overflow-y-scroll border-r bg-[#F2F2F2] pb-[var(--safe-area-inset-bottom)] pr-1 pt-[4.5rem]"
+        className="scrollbar-hide mt-[calc(2.5rem+var(--safe-area-inset-top))] w-[calc(2rem+var(--safe-area-inset-left))] flex-shrink-0 overflow-y-scroll border-r bg-[#F2F2F2] pb-[var(--safe-area-inset-bottom)] pr-1 pt-[4.5rem]"
         ref={(el) => {
           scrollRefs.current["__time__"] = el!;
         }}
