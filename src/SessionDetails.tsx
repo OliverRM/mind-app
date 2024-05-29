@@ -1,6 +1,6 @@
 import moment from "moment";
 import { Close, Star } from "./Icons";
-import { useGetSessionByIdQuery } from "./directus";
+import { useGetSessionByIdQuery } from "./demoData";
 import { dataSource } from "./query";
 import { useGetWatchesSession, useSetWatchesSession } from "./settings";
 

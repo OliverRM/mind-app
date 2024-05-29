@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Refresh } from "./Icons";
 import { ErrorScreen, LoadingScreen } from "./InfoScreen";
 import SessionDetails, { SessionPreview } from "./SessionDetails";
-import { useGetSessionsGroupedByDayQuery } from "./directus";
+import { useGetSessionsGroupedByDayQuery } from "./demoData";
 import { dataSource } from "./query";
 import { useGetWatchesSession } from "./settings";
 

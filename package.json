@@ -18,7 +18,6 @@
     "@tanstack/react-query": "^4.35.3",
     "@tanstack/react-query-persist-client": "^4.35.5",
     "capacitor-plugin-safe-area": "^2.0.5",
-    "graphql-request": "^6.1.0",
     "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
