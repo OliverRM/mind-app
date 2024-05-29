@@ -109,11 +109,13 @@ export const useGetSessionsGroupedByDayQuery = <
   variables?: {},
   options?: UseQueryOptions<GetSessionsGroupedByDayQuery, TError, TData>,
 ) =>
-  useQuery<GetSessionsGroupedByDayQuery, TError, TData>(
-    variables === undefined
-      ? ["GetSessionsGroupedByDay"]
-      : ["GetSessionsGroupedByDay", variables],
-    () => ({
+  useQuery<GetSessionsGroupedByDayQuery, TError, TData>({
+    ...options,
+    queryKey:
+      variables === undefined
+        ? ["GetSessionsGroupedByDay"]
+        : ["GetSessionsGroupedByDay", variables],
+    queryFn: () => ({
       rooms,
       days: [
         {
@@ -168,8 +170,7 @@ export const useGetSessionsGroupedByDayQuery = <
         },
       ],
     }),
-    options,
-  );
+  });
 
 export type GetSessionByIdQuery = {
   __typename?: "Query";
@@ -205,9 +206,10 @@ export const useGetSessionByIdQuery = <
   variables: { sessionId: string },
   options?: UseQueryOptions<GetSessionByIdQuery, TError, TData>,
 ) =>
-  useQuery<GetSessionByIdQuery, TError, TData>(
-    ["GetSessionById", variables],
-    () => ({
+  useQuery<GetSessionByIdQuery, TError, TData>({
+    ...options,
+    queryKey: ["GetSessionById", variables],
+    queryFn: () => ({
       sessions_by_id: {
         id: variables.sessionId,
         title: "App-Entwickung",
@@ -227,5 +229,4 @@ export const useGetSessionByIdQuery = <
         rooms: [{ rooms_id: { name: "Berta Benz" } }],
       },
     }),
-    options,
-  );
+  });

@@ -23,9 +23,8 @@ const SettingsContext: React.Context<{
 const { Provider } = SettingsContext;
 
 export const SettingsContextProvider = (props: any) => {
-  const [sessionWatch, setSessionWatch] = React.useState<string[]>(
-    loadSessionWatches(),
-  );
+  const [sessionWatch, setSessionWatch] =
+    React.useState<string[]>(loadSessionWatches());
   const setSessionWatchWrapper = (newSessionWatch: string[]) => {
     localStorage.setItem(SESSION_WATCH_KEY, JSON.stringify(newSessionWatch));
     setSessionWatch(newSessionWatch);
