@@ -2,7 +2,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { SafeArea, SafeAreaInsets } from "capacitor-plugin-safe-area";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
+import App from "./Timetable.tsx";
 import "./index.css";
 import { queryClient } from "./query.ts";
 import { SettingsContextProvider } from "./settings.tsx";
