@@ -1,4 +1,74 @@
 workflows:
+  release-android:
+    name: Build for Google Play
+    max_build_duration: 10
+    instance_type: mac_mini_m1
+    environment:
+      groups:
+        - github # Includes GITHUB_SSH_KEY
+        - google_play # Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+      android_signing:
+        - Mind Akademie Upload Key
+      java: 17
+      node: latest
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: release
+          include: true
+          source: true
+    scripts:
+      - name: Setup GitHub access
+        script: |
+          echo $GITHUB_SSH_KEY >> ~/.ssh./id_rsa
+          git remote set-url origin git@github.com:OliverRM/mind-app.git
+      - name: Install npm dependencies
+        script: |
+          npm ci
+      - name: Build React app
+        script: |
+          npm run build
+      - name: Set Android SDK location
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Set up keystore
+        script: |
+          cat >> "$CM_BUILD_DIR/android/keystore.properties" <<EOF
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyPassword=$CM_KEY_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          storeFile=$CM_KEYSTORE_PATH
+          EOF
+      - name: Update dependencies and copy web assets to native project
+        script: |
+          # npx cap copy # <- use this is you don't need to update native dependencies
+          npx cap sync # <- update native dependencies and copy web assets to native project
+      - name: Build Android release
+        script: |
+          cd android
+
+          # Calculate new build number
+          LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name 'de.mindakademie.app')
+          if [ -z LATEST_GOOGLE_PLAY_BUILD_NUMBER ]; then
+            exit 1
+          fi
+          STORE_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
+          echo "New build number: $STORE_BUILD_NUMBER"
+
+          # Start build
+          ./gradlew bundleRelease -PversionCode=$STORE_BUILD_NUMBER
+
+          # Tag git commit and push tag
+          git tag -a build-android-$BUILD_NUMBER-$STORE_BUILD_NUMBER -m "Build Android, Codemagic: $BUILD_NUMBER, Google Play: $STORE_BUILD_NUMBER"
+          git push origin build-android-$BUILD_NUMBER-$STORE_BUILD_NUMBER
+    artifacts:
+      - android/app/build/**/outputs/**/*.aab
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal # <-- Any default or custom track that is not in ‘draft’ status
   release-ios:
     name: Build for App Store Connect
     max_build_duration: 10
