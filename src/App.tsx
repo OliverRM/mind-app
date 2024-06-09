@@ -18,6 +18,7 @@ import {
   useMatch,
   useNavigate,
 } from "react-router-dom";
+import Profile from "./Profile";
 import Timetable from "./Timetable";
 
 const NavButton = (props: {
@@ -53,7 +54,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Navigate to="/timetable" />} />
             <Route path="/timetable" element={<Timetable />} />
-            <Route path="/profile" element={<div>Profile</div>} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </div>
         <div className="row-start-2 flex h-12 shrink-0 items-center justify-evenly border-t border-neutral-300 bg-neutral-200">
