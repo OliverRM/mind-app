@@ -20,7 +20,7 @@ const getSessionHeight = (start: string, end?: string) =>
   } *
     ${hourHeight})`;
 
-function App() {
+function Timetable() {
   const getWatchesSession = useGetWatchesSession();
 
   const scrollRefs = useRef<{ [key: string]: HTMLDivElement }>({});
@@ -54,7 +54,7 @@ function App() {
   const roomPositions = sessionsQuery.data.rooms.map((r) => r.id);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-full w-full">
       {/* Title bar */}
       <div
         className="absolute top-[var(--safe-area-inset-top)] h-10 w-full border-b text-center text-white"
@@ -244,4 +244,4 @@ function App() {
   );
 }
 
-export default App;
+export default Timetable;

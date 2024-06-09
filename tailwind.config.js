@@ -8,6 +8,17 @@ export default {
       borderColor: {
         DEFAULT: colors.black,
       },
+      colors: {
+        vermilion: {
+          300: "#FCCFAA",
+          500: "#EC7F62",
+          700: "#D54839",
+        },
+        bdazzled: {
+          500: "#6487DC",
+          700: "#274E90",
+        },
+      },
     },
     fontFamily: {
       sans: ['"Source Sans 3 VF"', "sans-serif"],
