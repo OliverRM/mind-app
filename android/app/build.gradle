@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 
+// get version code from the specified property argument `-PversionCode` during the build call
+def getVersionCode = { ->
+    return project.hasProperty('versionCode') ? versionCode.toInteger() : 1
+}
+
 android {
     namespace "de.mindakademie.app"
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -7,8 +12,8 @@ android {
         applicationId "de.mindakademie.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode getVersionCode()
+        versionName "1.0." + getVersionCode()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
