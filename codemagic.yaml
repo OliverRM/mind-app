@@ -129,6 +129,7 @@ workflows:
 
           cd $CM_BUILD_DIR/ios/App
           agvtool new-version -all $STORE_BUILD_NUMBER
+          agvtool new-marketing-version 1.0.$STORE_BUILD_NUMBER
 
           # Tag git commit and push tag
           git tag -a build-ios-$BUILD_NUMBER-$STORE_BUILD_NUMBER -m "Build iOS, Codemagic: $BUILD_NUMBER, App Store Connect: $STORE_BUILD_NUMBER"
