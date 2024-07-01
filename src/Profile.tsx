@@ -1,8 +1,10 @@
 import { Fragment } from "react/jsx-runtime";
+import { useSetUser } from "./appContext";
 import { useProfile } from "./dataSource";
 
 const Profile = () => {
   const { data, isLoading, isError } = useProfile();
+  const setUser = useSetUser();
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -46,7 +48,7 @@ const Profile = () => {
         ))}
         <button
           className="mx-auto mb-8 mt-12 block rounded bg-vermilion-700 px-4 py-2 text-center font-semibold text-white"
-          onClick={() => alert("Auf Wiedersehen!")}
+          onClick={() => setUser(null)}
         >
           Abmelden
         </button>

@@ -18,8 +18,10 @@ import {
   useMatch,
   useNavigate,
 } from "react-router-dom";
+import Login from "./Login";
 import Profile from "./Profile";
 import Timetable from "./Timetable";
+import { useUser } from "./appContext";
 
 const NavButton = (props: {
   text: ReactNode;
@@ -47,7 +49,10 @@ const NavButton = (props: {
 };
 
 const App = () => {
-  return (
+  const user = useUser();
+  return !user ? (
+    <Login />
+  ) : (
     <HashRouter>
       <div className="flex h-screen flex-col">
         <div className="min-h-0 grow">
