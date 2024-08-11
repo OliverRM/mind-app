@@ -4,8 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Refresh } from "./Icons";
 import { ErrorScreen, LoadingScreen } from "./InfoScreen";
 import SessionDetails, { SessionPreview } from "./SessionDetails";
-import { useGetSessionsGroupedByDayQuery } from "./demoData";
-import { dataSource } from "./query";
+import { useSchedule } from "./dataSource";
 import { useGetWatchesSession } from "./settings";
 
 const hourOffset = 7;
@@ -44,33 +43,31 @@ function Timetable() {
     null,
   );
 
-  const sessionsQuery = useGetSessionsGroupedByDayQuery(dataSource, {});
+  const scheduleQuery = useSchedule();
 
-  if (sessionsQuery.isLoading) return <LoadingScreen />;
+  if (scheduleQuery.isLoading) return <LoadingScreen />;
 
-  if (!sessionsQuery.data)
-    return <ErrorScreen onClick={() => sessionsQuery.refetch()} />;
-
-  const roomPositions = sessionsQuery.data.rooms.map((r) => r.id);
+  if (!scheduleQuery.data)
+    return <ErrorScreen onClick={() => scheduleQuery.refetch()} />;
 
   return (
     <div className="flex h-full w-full">
       {/* Title bar */}
       <div
         className="absolute top-[var(--safe-area-inset-top)] h-10 w-full border-b text-center text-white"
-        onClick={() => sessionsQuery.refetch()}
+        onClick={() => scheduleQuery.refetch()}
       >
         <Refresh className="absolute bottom-0 right-2 top-0 my-auto h-4 opacity-80" />
-        {sessionsQuery.isFetching ? (
+        {scheduleQuery.isFetching ? (
           <div className="absolute bottom-1.5 left-0 right-0 italic">
             Lädt...
           </div>
-        ) : moment(sessionsQuery.dataUpdatedAt).isBefore(
+        ) : moment(scheduleQuery.dataUpdatedAt).isBefore(
             moment().subtract(5, "minutes"),
           ) ? (
           <div className="absolute bottom-2 left-0 right-0 text-sm">
             Zuletzt aktualisiert:{" "}
-            {moment(sessionsQuery.dataUpdatedAt).fromNow()}
+            {moment(scheduleQuery.dataUpdatedAt).fromNow()}
           </div>
         ) : (
           <div className="absolute bottom-1.5 left-0 right-0">
@@ -100,139 +97,101 @@ function Timetable() {
       </div>
       {/* Main content (scrolls horizontally) */}
       <div className="mt-[calc(2.5rem+var(--safe-area-inset-top))] flex snap-x snap-mandatory scroll-pl-2 divide-x overflow-x-scroll bg-[#b0b0b0] pr-[var(--safe-area-inset-right)]">
-        {sessionsQuery.data.days.map(
-          ({ id: dayId, display, date, sessions, comments }) => (
-            /* Day column */
+        {scheduleQuery.data.days.map((day, dayId) => (
+          /* Day column */
+          <div
+            className="flex w-[calc(100%+var(--safe-area-inset-right)-0.5rem-max(0.5rem,var(--safe-area-inset-right)))] max-w-2xl flex-shrink-0 snap-start flex-col bg-[#F2F2F2]"
+            key={dayId}
+          >
+            {/* Date header */}
+            <div className="h-6 flex-shrink-0 border-b bg-[#274E90] text-center text-white">
+              {day.name}
+            </div>
+            {/* Room headers */}
             <div
-              className="flex w-[calc(100%+var(--safe-area-inset-right)-0.5rem-max(0.5rem,var(--safe-area-inset-right)))] max-w-2xl flex-shrink-0 snap-start flex-col bg-[#F2F2F2]"
-              key={dayId}
+              className="flex h-12 flex-shrink-0 divide-x overflow-y-scroll border-b bg-[#6487DC] text-sm text-white"
+              style={{
+                scrollbarGutter: "stable",
+              }}
             >
-              {/* Date header */}
-              <div className="h-6 flex-shrink-0 border-b bg-[#274E90] text-center text-white">
-                {display}
-              </div>
-              {/* Room headers */}
-              <div
-                className="flex h-12 flex-shrink-0 divide-x overflow-y-scroll border-b bg-[#6487DC] text-sm text-white"
-                style={{
-                  scrollbarGutter: "stable",
-                }}
-              >
-                {sessionsQuery.data.rooms.map((r) => (
-                  <div
-                    className="flex flex-1 items-center justify-center overflow-y-hidden text-center"
-                    key={r.id}
-                  >
-                    {r.name}
-                  </div>
-                ))}
-              </div>
-              {/* Sessions */}
-              <div
-                className="flex-grow overflow-x-hidden overflow-y-scroll"
-                ref={(el) => {
-                  scrollRefs.current[dayId] = el!;
-                }}
-                onScroll={onScroll}
-                onTouchStart={onScrollTouchStart}
-              >
+              {day.columns.map(({ title }, colId) => (
                 <div
-                  className="relative w-full overflow-hidden"
-                  style={{
-                    height: `calc(${
-                      24 - hourOffset
-                    } * ${hourHeight} + var(--safe-area-inset-bottom))`,
-                  }}
+                  className="flex flex-1 items-center justify-center overflow-y-hidden text-center"
+                  key={colId}
                 >
-                  {sessions!
-                    .map((s) => s!)
-                    .map((s) => (
-                      <div
-                        className="flex flex-col justify-center border bg-white p-px text-center text-xs"
-                        style={{
-                          position: "absolute",
-                          top: `calc(${getSessionHeight(s.time_start!)} - 1px)`,
-                          left: `calc(${
-                            s
-                              .rooms!.map((room) =>
-                                roomPositions.indexOf(room!.rooms_id!.id),
-                              )
-                              .reduce((a, b) => (a < b ? a : b)) /
-                            roomPositions.length
-                          }* (100% + 1px) - 1px`,
-                          width: `calc(${
-                            s.rooms!.length / roomPositions.length
-                          } * (100% + 1px) + 1px)`,
-                          height: `calc(${getSessionHeight(
-                            s.time_start!,
-                            s.time_end!,
-                          )} + 1px)`,
-                          backgroundColor: s.type!.background_color!,
-                          color: s.type!.text_color!,
-                          boxShadow: getWatchesSession(s.id)
-                            ? "#274e90 0px 0px 0px 2px inset"
-                            : undefined,
-                        }}
-                        onClick={() => setSelectedSession(s)}
-                        key={s.id}
-                      >
-                        <div
-                          className={
-                            s.cancelled ? "line-through opacity-50" : ""
-                          }
-                        >
-                          {s.type!.requires_referee ? (
-                            <>
-                              <div className="font-semibold">{s.referee}</div>
-                              <div>{s.title}</div>
-                            </>
-                          ) : (
-                            <div className="font-semibold">{s.title}</div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  {comments!
-                    .map((c) => c!)
-                    .map((c) => (
-                      <div
-                        className="text-center text-xs"
-                        style={{
-                          position: "absolute",
-                          top: `calc(${getSessionHeight(c.time!)} - 1px)`,
-                          left: `calc(${
-                            (c
-                              .rooms!.map((room) =>
-                                roomPositions.indexOf(room!.rooms_id!.id),
-                              )
-                              .reduce((a, b) => (a < b ? a : b)) /
-                              roomPositions.length) *
-                            100
-                          }% - 1px`,
-                          width: `calc(${
-                            (c.rooms!.length / roomPositions.length) * 100
-                          }% + 1px)`,
-                        }}
-                        key={c.id}
-                      >
-                        {c.content}
-                      </div>
-                    ))}
-                  {/* Current time indicator */}
-                  {moment(date).isSame(moment(), "day") && (
-                    <hr
-                      className="absolute left-0 right-0 border-none"
-                      style={{
-                        top: getSessionHeight(nowState),
-                        boxShadow: "0 0 2px 1px #DA441B",
-                      }}
-                    />
-                  )}
+                  {title}
                 </div>
+              ))}
+            </div>
+            {/* Sessions */}
+            <div
+              className="flex-grow overflow-x-hidden overflow-y-scroll"
+              ref={(el) => {
+                scrollRefs.current[dayId] = el!;
+              }}
+              onScroll={onScroll}
+              onTouchStart={onScrollTouchStart}
+            >
+              <div
+                className="relative w-full overflow-hidden"
+                style={{
+                  height: `calc(${
+                    24 - hourOffset
+                  } * ${hourHeight} + var(--safe-area-inset-bottom))`,
+                }}
+              >
+                {scheduleQuery.data.sessions
+                  .filter((s) => s.day === dayId)
+                  .map((s) => (
+                    <div
+                      className="flex flex-col justify-center bg-white p-px text-center text-xs"
+                      style={{
+                        position: "absolute",
+                        top: `calc(${getSessionHeight(s.timeStart)} - 1px)`,
+                        left: `calc(${
+                          s.columnStart / day.columns.length
+                        }* (100% + 1px) - 1px`,
+                        width: `calc(${
+                          (s.columnEnd - s.columnStart + 1) / day.columns.length
+                        } * (100% + 1px) + 1px)`,
+                        height: `calc(${getSessionHeight(
+                          s.timeStart,
+                          s.timeEnd,
+                        )} + 1px)`,
+                        backgroundColor: s.backgroundColor,
+                        color: s.textColor,
+                        border: s.border ? "1px solid #000" : "none",
+                        boxShadow: getWatchesSession(s.id)
+                          ? "#274e90 0px 0px 0px 2px inset"
+                          : undefined,
+                      }}
+                      onClick={() => setSelectedSession(s)}
+                      key={s.id}
+                    >
+                      <div
+                        className={s.cancelled ? "line-through opacity-50" : ""}
+                      >
+                        <>
+                          <div className="font-semibold">{s.title}</div>
+                          {s.subtitle !== null && <div>{s.subtitle}</div>}
+                        </>
+                      </div>
+                    </div>
+                  ))}
+                {/* Current time indicator */}
+                {moment(day.date).isSame(moment(), "day") && (
+                  <hr
+                    className="absolute left-0 right-0 border-none"
+                    style={{
+                      top: getSessionHeight(nowState),
+                      boxShadow: "0 0 2px 1px #DA441B",
+                    }}
+                  />
+                )}
               </div>
             </div>
-          ),
-        )}
+          </div>
+        ))}
       </div>
       {selectedSession && (
         <SessionDetails
