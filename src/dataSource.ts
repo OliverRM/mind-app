@@ -2,7 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 
 const baseUrl = "https://924505b8-69cb-40ba-9618-72c7eed64d1f.mock.pstmn.io/";
 
-type Schedule = {
+export type SessionPreview = Omit<SessionDetails, "description">;
+
+export type Schedule = {
   days: {
     name: string;
     date: string;
@@ -25,6 +27,7 @@ type Schedule = {
     day: number;
     columnStart: number;
     columnEnd: number;
+    session: SessionPreview | null;
   }[];
 };
 
@@ -35,7 +38,27 @@ export const useSchedule = () =>
       fetch(baseUrl + "/schedule").then((r) => r.json()),
   });
 
-type Profile = {
+export type SessionDetails = {
+  id: string;
+  title: string;
+  referee: string | null;
+  type: string;
+  cancelled: boolean;
+  location: string;
+  day: string;
+  timeStart: string;
+  timeEnd: string;
+  description: string;
+};
+
+export const useSessionDetails = (id: string) =>
+  useQuery({
+    queryKey: ["session", id],
+    queryFn: async (): Promise<SessionDetails> =>
+      fetch(baseUrl + "/sessions/" + id).then((r) => r.json()),
+  });
+
+export type Profile = {
   name: string;
   subtitle: string;
   paymentStatus: "PAYED" | "PENDING";

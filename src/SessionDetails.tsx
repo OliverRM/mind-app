@@ -1,33 +1,7 @@
 import moment from "moment";
 import { Close, Star } from "./Icons";
-import { useGetSessionByIdQuery } from "./demoData";
-import { dataSource } from "./query";
+import { SessionPreview, useSessionDetails } from "./dataSource";
 import { useGetWatchesSession, useSetWatchesSession } from "./settings";
-
-export type SessionPreview = {
-  __typename?: "sessions";
-  id: string;
-  title?: string | null;
-  referee?: string | null;
-  cancelled?: boolean | null;
-  time_start?: string | null;
-  time_end?: string | null;
-  type?: {
-    __typename?: "session_types";
-    name?: string | null;
-    requires_referee?: boolean | null;
-    background_color?: string | null;
-    text_color?: string | null;
-  } | null;
-  rooms?: Array<{
-    __typename?: "sessions_rooms";
-    rooms_id?: {
-      __typename?: "rooms";
-      id: string;
-      name?: string | null;
-    } | null;
-  } | null> | null;
-};
 
 const SessionDetails = (params: {
   session: SessionPreview;
@@ -36,12 +10,10 @@ const SessionDetails = (params: {
   const getWatchesSession = useGetWatchesSession();
   const setWatchesSession = useSetWatchesSession();
 
-  const query = useGetSessionByIdQuery(dataSource, {
-    sessionId: params.session.id,
-  });
+  const query = useSessionDetails(params.session.id);
 
   const sessionP = params.session;
-  const sessionQ = query.data?.sessions_by_id;
+  const sessionQ = query.data;
   const session = sessionQ || sessionP;
 
   const fTime = (s: string) => moment("1970-01-01T" + s).format("HH:mm");
@@ -50,9 +22,7 @@ const SessionDetails = (params: {
     <div className="fixed  bottom-0 left-0 right-0 top-0 bg-black bg-opacity-75">
       <div className="absolute bottom-[calc(1rem+var(--safe-area-inset-bottom))] left-[calc(1rem+var(--safe-area-inset-left))] right-[calc(1rem+var(--safe-area-inset-right))] top-[calc(1rem+var(--safe-area-inset-top))] overflow-y-auto bg-white p-4">
         <div className="flex">
-          <h3 className="flex-grow text-2xl text-[#d54839]">
-            {sessionQ?.title_long || sessionP.title}
-          </h3>
+          <h3 className="flex-grow text-2xl text-[#d54839]">{session.title}</h3>
           <button
             className="ml-2 flex-shrink-0 self-start p-2"
             onClick={params.onClose}
@@ -64,25 +34,13 @@ const SessionDetails = (params: {
         <div className="mb-4 mt-4 flex text-sm text-slate-600">
           <div className="flex-grow">
             <div>
-              {session.type?.name} von{" "}
-              {sessionQ?.referee_long || sessionP.referee}
+              {session.type}
+              {session.referee ? <> von {session.referee}</> : null}
             </div>
             <div>
-              {sessionQ ? <>{sessionQ.day?.display}, </> : null}
-              {fTime(session.time_start!)} bis {fTime(session.time_end!)} Uhr
+              {`${session.day}, ${fTime(session.timeStart)} bis ${fTime(session.timeEnd)} Uhr`}
             </div>
-            <div>
-              {session.rooms?.length
-                ? session.rooms!.length <= 1
-                  ? session.rooms![0]!.rooms_id!.name
-                  : session
-                      .rooms!.map((r) => r!.rooms_id!.name)
-                      .slice(0, -1)
-                      .join(", ") +
-                    " und " +
-                    session.rooms![session.rooms!.length - 1]!.rooms_id!.name
-                : ""}
-            </div>
+            <div>{session.location}</div>
           </div>
           <Star
             filled={getWatchesSession(sessionP.id)}
@@ -95,14 +53,18 @@ const SessionDetails = (params: {
         {session.cancelled ? (
           <div className="font-semibold text-red-700">Abgesagt</div>
         ) : null}
-        {!query.data ? (
-          <div className="italic">{query.isLoading ? "Lädt..." : "Fehler"}</div>
-        ) : sessionQ?.description ? (
+        {sessionQ ? (
           sessionQ.description
             ?.split("\n")
             .filter((p) => p)
-            .map((p) => <p className="mt-2">{p}</p>)
-        ) : null}
+            .map((p, i) => (
+              <p key={i} className="mt-2">
+                {p}
+              </p>
+            ))
+        ) : (
+          <div className="italic">{query.isLoading ? "Lädt..." : "Fehler"}</div>
+        )}
       </div>
     </div>
   );

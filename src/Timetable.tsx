@@ -3,8 +3,8 @@ import "moment/dist/locale/de";
 import { useEffect, useRef, useState } from "react";
 import { Refresh } from "./Icons";
 import { ErrorScreen, LoadingScreen } from "./InfoScreen";
-import SessionDetails, { SessionPreview } from "./SessionDetails";
-import { useSchedule } from "./dataSource";
+import SessionDetails from "./SessionDetails";
+import { SessionPreview, useSchedule } from "./dataSource";
 import { useGetWatchesSession } from "./settings";
 
 const hourOffset = 7;
@@ -165,7 +165,11 @@ function Timetable() {
                           ? "#274e90 0px 0px 0px 2px inset"
                           : undefined,
                       }}
-                      onClick={() => setSelectedSession(s)}
+                      onClick={
+                        s.session
+                          ? () => setSelectedSession(s.session)
+                          : undefined
+                      }
                       key={s.id}
                     >
                       <div
