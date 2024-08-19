@@ -1,10 +1,12 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
   faCalendar as faCalendarOutline,
+  faLightbulb as faLightbulbOutline,
   faUser as faUserOutline,
 } from "@fortawesome/free-regular-svg-icons";
 import {
   faCalendar as faCalendarSolid,
+  faLightbulb as faLightbulbSolid,
   faUser as faUserSolid,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,6 +24,8 @@ import ErrorBoundary from "./ErrorBoundary";
 import Login from "./Login";
 import Profile from "./Profile";
 import Timetable from "./Timetable";
+import Wiki from "./Wiki";
+import WikiArticle from "./WikiArticle";
 import { useUser } from "./appContext";
 
 const NavButton = (props: {
@@ -62,10 +66,18 @@ const App = () => {
               <Route path="/" element={<Navigate to="/timetable" />} />
               <Route path="/timetable" element={<Timetable />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/wiki" element={<Wiki />} />
+              <Route path="/wiki/:articleId" element={<WikiArticle />} />
             </Routes>
           </ErrorBoundary>
         </div>
         <div className="row-start-2 flex h-12 shrink-0 items-center justify-evenly border-t border-neutral-300 bg-neutral-200">
+          <NavButton
+            text="Wiki"
+            iconSelected={faLightbulbSolid}
+            iconUnselected={faLightbulbOutline}
+            target="/wiki"
+          />
           <NavButton
             text="Zeitplan"
             iconSelected={faCalendarSolid}
