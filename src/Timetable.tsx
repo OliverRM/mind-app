@@ -6,6 +6,7 @@ import { ErrorScreen, LoadingScreen } from "./InfoScreen";
 import SessionDetails from "./SessionDetails";
 import { SessionPreview, useSchedule } from "./dataSource";
 import { useGetWatchesSession } from "./settings";
+import TitleBar from "./TitleBar";
 
 const hourOffset = 7;
 const hourHeight = "4rem";
@@ -52,29 +53,9 @@ function Timetable() {
 
   return (
     <div className="flex h-full w-full">
-      {/* Title bar */}
-      <div
-        className="absolute top-[var(--safe-area-inset-top)] h-10 w-full border-b text-center text-white"
-        onClick={() => scheduleQuery.refetch()}
-      >
-        <Refresh className="absolute bottom-0 right-2 top-0 my-auto h-4 opacity-80" />
-        {scheduleQuery.isFetching ? (
-          <div className="absolute bottom-1.5 left-0 right-0 italic">
-            Lädt...
-          </div>
-        ) : moment(scheduleQuery.dataUpdatedAt).isBefore(
-            moment().subtract(5, "minutes"),
-          ) ? (
-          <div className="absolute bottom-2 left-0 right-0 text-sm">
-            Zuletzt aktualisiert:{" "}
-            {moment(scheduleQuery.dataUpdatedAt).fromNow()}
-          </div>
-        ) : (
-          <div className="absolute bottom-1.5 left-0 right-0">
-            Mind-Akademie
-          </div>
-        )}
-      </div>
+      <TitleBar className="absolute w-full border-b" query={scheduleQuery}>
+        Mind-Akademie
+      </TitleBar>
       {/* Time bar */}
       <div
         className="scrollbar-hide mt-[calc(2.5rem+var(--safe-area-inset-top))] w-[calc(2rem+var(--safe-area-inset-left))] flex-shrink-0 overflow-y-scroll border-r bg-[#F2F2F2] pb-[var(--safe-area-inset-bottom)] pr-1 pt-[4.5rem]"
