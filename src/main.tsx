@@ -7,6 +7,7 @@ import { AppContextProvider } from "./appContext.ts";
 import "./index.css";
 import { queryClient } from "./query.ts";
 import { SettingsContextProvider } from "./settings.tsx";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const setSafeArea = (data: SafeAreaInsets) => {
   const { insets } = data;
@@ -28,6 +29,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <SettingsContextProvider>
         <QueryClientProvider client={queryClient}>
           <App />
+          <ReactQueryDevtools />
         </QueryClientProvider>
       </SettingsContextProvider>
     </AppContextProvider>
