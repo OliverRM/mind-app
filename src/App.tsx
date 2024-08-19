@@ -18,6 +18,7 @@ import {
   useMatch,
   useNavigate,
 } from "react-router-dom";
+import ErrorBoundary from "./ErrorBoundary";
 import Login from "./Login";
 import Profile from "./Profile";
 import Timetable from "./Timetable";
@@ -56,11 +57,13 @@ const App = () => {
     <HashRouter>
       <div className="flex h-screen flex-col">
         <div className="min-h-0 grow">
-          <Routes>
-            <Route path="/" element={<Navigate to="/timetable" />} />
-            <Route path="/timetable" element={<Timetable />} />
-            <Route path="/profile" element={<Profile />} />
-          </Routes>
+          <ErrorBoundary>
+            <Routes>
+              <Route path="/" element={<Navigate to="/timetable" />} />
+              <Route path="/timetable" element={<Timetable />} />
+              <Route path="/profile" element={<Profile />} />
+            </Routes>
+          </ErrorBoundary>
         </div>
         <div className="row-start-2 flex h-12 shrink-0 items-center justify-evenly border-t border-neutral-300 bg-neutral-200">
           <NavButton
