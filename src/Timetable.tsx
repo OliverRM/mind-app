@@ -1,12 +1,11 @@
 import moment from "moment";
 import "moment/dist/locale/de";
 import { useEffect, useRef, useState } from "react";
-import { Refresh } from "./Icons";
 import { ErrorScreen, LoadingScreen } from "./InfoScreen";
 import SessionDetails from "./SessionDetails";
+import TitleBar from "./TitleBar";
 import { SessionPreview, useSchedule } from "./dataSource";
 import { useGetWatchesSession } from "./settings";
-import TitleBar from "./TitleBar";
 
 const hourOffset = 7;
 const hourHeight = "4rem";

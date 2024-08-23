@@ -19,7 +19,7 @@ const SessionDetails = (params: {
   const fTime = (s: string) => moment("1970-01-01T" + s).format("HH:mm");
 
   return (
-    <div className="fixed  bottom-0 left-0 right-0 top-0 bg-black bg-opacity-75">
+    <div className="fixed bottom-0 left-0 right-0 top-0 bg-black bg-opacity-75">
       <div className="absolute bottom-[calc(1rem+var(--safe-area-inset-bottom))] left-[calc(1rem+var(--safe-area-inset-left))] right-[calc(1rem+var(--safe-area-inset-right))] top-[calc(1rem+var(--safe-area-inset-top))] overflow-y-auto bg-white p-4">
         <div className="flex">
           <h3 className="flex-grow text-2xl text-[#d54839]">{session.title}</h3>

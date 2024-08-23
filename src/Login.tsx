@@ -16,7 +16,7 @@ const LoginButton = (props: {
 }) => (
   <button
     className={twMerge(
-      "bg-bdazzled-300 flex h-8 items-center justify-center gap-2.5 rounded-md px-8 py-3 shadow-[0px_2px_16px_rgba(0,0,0,0.5)] active:bg-bdazzled-500",
+      "flex h-8 items-center justify-center gap-2.5 rounded-md bg-bdazzled-300 px-8 py-3 shadow-[0px_2px_16px_rgba(0,0,0,0.5)] active:bg-bdazzled-500",
       props.className,
     )}
     onClick={props.onClick}

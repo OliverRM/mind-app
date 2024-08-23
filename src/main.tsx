@@ -1,4 +1,5 @@
 import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SafeArea, SafeAreaInsets } from "capacitor-plugin-safe-area";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -7,7 +8,6 @@ import { AppContextProvider } from "./appContext.ts";
 import "./index.css";
 import { queryClient } from "./query.ts";
 import { SettingsContextProvider } from "./settings.tsx";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const setSafeArea = (data: SafeAreaInsets) => {
   const { insets } = data;
