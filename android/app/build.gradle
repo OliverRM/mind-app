@@ -7,7 +7,7 @@ def getVersionCode = { ->
 
 android {
     namespace "de.mindakademie.app"
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "de.mindakademie.app"
         minSdkVersion rootProject.ext.minSdkVersion
