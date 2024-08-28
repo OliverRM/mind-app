@@ -45,24 +45,29 @@ workflows:
         script: |
           # npx cap copy # <- use this is you don't need to update native dependencies
           npx cap sync # <- update native dependencies and copy web assets to native project
-      - name: Build Android release
+      - name: Increment build number
         script: |
-          cd android
+          #!/bin/sh
+          set -e
+          set -x
 
           # Calculate new build number
           LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name 'de.mindakademie.app')
           if [ -z LATEST_GOOGLE_PLAY_BUILD_NUMBER ]; then
             exit 1
           fi
-          STORE_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
-          echo "New build number: $STORE_BUILD_NUMBER"
 
-          # Start build
-          ./gradlew bundleRelease -PversionCode=$STORE_BUILD_NUMBER
+          STORE_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
+          echo "STORE_BUILD_NUMBER=$STORE_BUILD_NUMBER" >> $CM_ENV
+          echo "New build number: $STORE_BUILD_NUMBER"
 
           # Tag git commit and push tag
           git tag -a build-android-$BUILD_NUMBER-$STORE_BUILD_NUMBER -m "Build Android, Codemagic: $BUILD_NUMBER, Google Play: $STORE_BUILD_NUMBER"
           git push origin build-android-$BUILD_NUMBER-$STORE_BUILD_NUMBER
+      - name: Build Android release
+        script: |
+          # Start build
+          cd ./android && ./gradlew bundleRelease -PversionCode=$STORE_BUILD_NUMBER
     artifacts:
       - android/app/build/**/outputs/**/*.aab
     publishing:
