@@ -7,7 +7,7 @@ import {
 } from "react";
 
 type AppContextData = {
-  user: { name: string } | null;
+  user: { token: string; guest: false } | { token: null; guest: true } | null;
 };
 
 const defaultValue: AppContextData = {
