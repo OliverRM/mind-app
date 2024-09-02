@@ -17,28 +17,11 @@ const Profile = () => {
   return (
     <div className="h-full overflow-y-scroll">
       <div className="sticky top-0 mb-2 mt-20 bg-bdazzled-700 py-2">
-        <h1 className="text-center text-2xl text-white">{data.name}</h1>
+        <h1 className="text-center text-2xl text-white">Profil</h1>
         <h2 className="text-center text-sm font-semibold text-neutral-200">
-          {data.subtitle}
+          {data.name}
         </h2>
       </div>
-      <h2 className={`mb-6 text-center text-sm font-semibold`}>
-        <span
-          className={`rounded-full px-3 py-0.5 ${
-            data.paymentStatus === "PAYED"
-              ? "bg-green-500"
-              : data.paymentStatus === "PENDING"
-                ? "bg-yellow-500"
-                : "bg-neutral-400"
-          }`}
-        >
-          {data.paymentStatus === "PAYED"
-            ? "Betrag bezahlt"
-            : data.paymentStatus === "PENDING"
-              ? "Betrag ausstehend"
-              : data.paymentStatus}
-        </span>
-      </h2>
       <div className="bg-white p-4">
         {data.extraData.map((item) => (
           <Fragment key={item.label}>

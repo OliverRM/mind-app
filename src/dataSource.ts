@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useUser } from "./appContext";
 
 export const baseUrl = "https://mind-rp.oliverrm.de/api/v1";
 
@@ -92,14 +93,20 @@ export const useSessionDetails = (id: number) =>
 
 export type Profile = {
   name: string;
-  subtitle: string;
-  paymentStatus: "PAYED" | "PENDING";
   extraData: { label: string; value: string }[];
 };
 
-export const useProfile = () =>
-  useQuery({
-    queryKey: ["profile"],
+export const useProfile = () => {
+  const token = useUser()?.token;
+
+  return useQuery({
+    queryKey: [token, "profile"],
+    enabled: !!token,
     queryFn: (): Promise<Profile> =>
-      fetch(baseUrl + "/profile").then((r) => r.json()),
+      fetch(baseUrl + "/profile", {
+        headers: new Headers({
+          Authorization: "Bearer " + token,
+        }),
+      }).then((r) => r.json()),
   });
+};
