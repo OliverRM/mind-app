@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-const baseUrl = "https://924505b8-69cb-40ba-9618-72c7eed64d1f.mock.pstmn.io/";
+export const baseUrl = "https://mind-rp.oliverrm.de/api/v1";
 
 export type Wiki = {
   articles: {
@@ -32,18 +32,21 @@ export const useWikiArticle = (id: string) =>
 
 export type SessionPreview = Omit<SessionDetails, "description">;
 
+type DateOnly = string;
+type TimeOnly = string;
+
 export type Schedule = {
   days: {
     name: string;
-    date: string;
+    date: DateOnly;
     columns: {
       title: string;
     }[];
   }[];
-  timeStart: string;
-  timeEnd: string;
+  timeStart: TimeOnly;
+  timeEnd: TimeOnly;
   sessions: {
-    id: string;
+    id: number;
     title: string;
     subtitle: string | null;
     cancelled: boolean;
@@ -55,7 +58,8 @@ export type Schedule = {
     day: number;
     columnStart: number;
     columnEnd: number;
-    session: SessionPreview | null;
+    sessionId: number | null;
+    subscribed?: boolean;
   }[];
 };
 
@@ -79,7 +83,7 @@ export type SessionDetails = {
   description: string;
 };
 
-export const useSessionDetails = (id: string) =>
+export const useSessionDetails = (id: number) =>
   useQuery({
     queryKey: ["session", id],
     queryFn: (): Promise<SessionDetails> =>

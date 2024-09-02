@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ErrorScreen, LoadingScreen } from "./InfoScreen";
 import SessionDetails from "./SessionDetails";
 import TitleBar from "./TitleBar";
-import { SessionPreview, useSchedule } from "./dataSource";
+import { useSchedule } from "./dataSource";
 import { useGetWatchesSession } from "./settings";
 
 const hourOffset = 7;
@@ -39,9 +39,7 @@ function Timetable() {
     setInterval(() => setNowState(moment().format("HH:mm:ss")), 10000);
   }, []);
 
-  const [selectedSession, setSelectedSession] = useState<SessionPreview | null>(
-    null,
-  );
+  const [selectedSession, setSelectedSession] = useState<number | null>(null);
 
   const scheduleQuery = useSchedule();
 
@@ -141,13 +139,15 @@ function Timetable() {
                         backgroundColor: s.backgroundColor,
                         color: s.textColor,
                         border: s.border ? "1px solid #000" : "none",
-                        boxShadow: getWatchesSession(s.id)
-                          ? "#274e90 0px 0px 0px 2px inset"
-                          : undefined,
+                        boxShadow:
+                          s.sessionId !== null &&
+                          getWatchesSession(s.sessionId.toString())
+                            ? "#274e90 0px 0px 0px 2px inset"
+                            : undefined,
                       }}
                       onClick={
-                        s.session
-                          ? () => setSelectedSession(s.session)
+                        s.sessionId !== null
+                          ? () => setSelectedSession(s.sessionId)
                           : undefined
                       }
                       key={s.id}
@@ -179,7 +179,7 @@ function Timetable() {
       </div>
       {selectedSession && (
         <SessionDetails
-          session={selectedSession}
+          sessionId={selectedSession}
           onClose={() => setSelectedSession(null)}
         />
       )}

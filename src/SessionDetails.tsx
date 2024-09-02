@@ -1,22 +1,23 @@
 import moment from "moment";
 import { Close, Star } from "./Icons";
-import { SessionPreview, useSessionDetails } from "./dataSource";
+import { useSessionDetails } from "./dataSource";
 import { useGetWatchesSession, useSetWatchesSession } from "./settings";
 
 const SessionDetails = (params: {
-  session: SessionPreview;
+  sessionId: number;
   onClose?: React.MouseEventHandler<HTMLButtonElement>;
 }) => {
   const getWatchesSession = useGetWatchesSession();
   const setWatchesSession = useSetWatchesSession();
 
-  const query = useSessionDetails(params.session.id);
+  const query = useSessionDetails(params.sessionId);
 
-  const sessionP = params.session;
-  const sessionQ = query.data;
-  const session = sessionQ || sessionP;
+  const session = query.data;
 
   const fTime = (s: string) => moment("1970-01-01T" + s).format("HH:mm");
+
+  // TODO: Return loading indicator
+  if (!session) return null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 top-0 bg-black bg-opacity-75">
@@ -43,28 +44,24 @@ const SessionDetails = (params: {
             <div>{session.location}</div>
           </div>
           <Star
-            filled={getWatchesSession(sessionP.id)}
+            filled={getWatchesSession(session.id)}
             className="h-8 text-amber-500"
             onClick={() =>
-              setWatchesSession(sessionP.id, !getWatchesSession(sessionP.id))
+              setWatchesSession(session.id, !getWatchesSession(session.id))
             }
           />
         </div>
         {session.cancelled ? (
           <div className="font-semibold text-red-700">Abgesagt</div>
         ) : null}
-        {sessionQ ? (
-          sessionQ.description
-            ?.split("\n")
-            .filter((p) => p)
-            .map((p, i) => (
-              <p key={i} className="mt-2">
-                {p}
-              </p>
-            ))
-        ) : (
-          <div className="italic">{query.isLoading ? "Lädt..." : "Fehler"}</div>
-        )}
+        {session.description
+          ?.split("\n")
+          .filter((p) => p)
+          .map((p, i) => (
+            <p key={i} className="mt-2">
+              {p}
+            </p>
+          ))}
       </div>
     </div>
   );
