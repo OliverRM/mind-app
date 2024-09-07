@@ -68,7 +68,7 @@ const Login = () => {
 
   return (
     <div
-      className={`flex h-screen flex-col items-center justify-evenly bg-[url("${background}")] bg-cover`}
+      className={`flex h-screen flex-col items-center justify-evenly bg-[url("${background}")] p-safe relative bg-cover`}
       style={{ backgroundImage: `url(${background})` }}
     >
       <img
@@ -106,7 +106,7 @@ const Login = () => {
       </div>
       {passwordLogin && (
         <div
-          className="absolute grid h-full w-full place-items-center bg-black bg-opacity-60 backdrop-blur-sm"
+          className="p-safe absolute inset-0 grid place-items-center bg-black bg-opacity-60 backdrop-blur-sm"
           onClick={() => {
             if (!isLoading) setPasswordLogin(null);
           }}

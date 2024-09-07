@@ -41,7 +41,7 @@ const NavButton = (props: {
 
   return (
     <button
-      className={`flex flex-col items-center text-xs ${isSelected ? "text-bdazzled-700" : "text-neutral-600"}`}
+      className={`flex h-12 flex-col items-center pt-1 text-xs ${isSelected ? "text-bdazzled-700" : "text-neutral-600"}`}
       onClick={props.onClick || (() => navigate(props.target))}
     >
       <FontAwesomeIcon
@@ -59,7 +59,7 @@ const TabBar = () => {
   const setUser = useSetUser();
 
   return (
-    <div className="row-start-2 flex h-12 shrink-0 items-center justify-evenly border-t border-neutral-300 bg-neutral-200">
+    <div className="pb-safe px-safe row-start-2 flex shrink-0 items-center justify-evenly border-t border-neutral-300 bg-neutral-200">
       <NavButton
         text="Wiki"
         iconSelected={faLightbulbSolid}

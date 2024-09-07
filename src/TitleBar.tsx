@@ -14,12 +14,12 @@ const TitleBar = (props: {
   return (
     <div
       className={twMerge(
-        "relative h-10 pt-[var(--safe-area-inset-top)] text-center text-white",
+        "relative h-[calc(2.5rem+var(--safe-area-inset-top))] text-center text-white",
         props.className,
       )}
       onClick={() => query.refetch()}
     >
-      <Refresh className="absolute bottom-0 right-2 top-0 my-auto h-4 opacity-80" />
+      <Refresh className="absolute bottom-3 right-[calc(0.5rem+var(--safe-area-inset-right))] h-4 opacity-80" />
       {query.isFetching ? (
         <div className="absolute bottom-1.5 left-0 right-0 italic">Lädt...</div>
       ) : moment(query.dataUpdatedAt).isBefore(
