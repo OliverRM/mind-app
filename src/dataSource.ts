@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useUser } from "./appContext";
+import { queryClient } from "./query";
 
 export const baseUrl = "https://akademie-app.soeftware.de/api/v1";
 
@@ -53,12 +54,19 @@ export type Schedule = {
   }[];
 };
 
-export const useSchedule = () =>
-  useQuery({
+export const useSchedule = () => {
+  const token = useUser()?.token;
+
+  return useQuery({
     queryKey: ["schedule"],
     queryFn: (): Promise<Schedule> =>
-      fetch(baseUrl + "/schedule").then((r) => r.json()),
+      fetch(baseUrl + "/schedule", {
+        headers: token
+          ? new Headers({ Authorization: "Bearer " + token })
+          : undefined,
+      }).then((r) => r.json()),
   });
+};
 
 export type SessionDetails = {
   id: number;
@@ -71,15 +79,59 @@ export type SessionDetails = {
   endTime: string;
   location: string;
   changeFlag: "None" | "Added" | "Moved" | "Cancelled";
+  subscribed?: boolean;
   extraData: { label: string; value: string }[];
 };
 
-export const useSessionDetails = (id: number) =>
-  useQuery({
+export const useSessionDetails = (id: number) => {
+  const token = useUser()?.token;
+
+  return useQuery({
     queryKey: ["session", id],
     queryFn: (): Promise<SessionDetails> =>
-      fetch(baseUrl + "/sessions/" + id).then((r) => r.json()),
+      fetch(baseUrl + "/sessions/" + id, {
+        headers: token
+          ? new Headers({ Authorization: "Bearer " + token })
+          : undefined,
+      }).then((r) => r.json()),
   });
+};
+
+export const useSubscribeSession = (id: number) => {
+  const token = useUser()?.token;
+
+  return useMutation({
+    mutationKey: ["subscribe", id],
+    mutationFn: (subscribed: boolean) =>
+      fetch(baseUrl + "/sessions/" + id + "/subscribed", {
+        method: "PUT",
+        headers: new Headers({
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        }),
+        body: subscribed.toString(),
+      }).then((r) => {
+        if (!r.ok) throw new Error(r.statusText);
+      }),
+    onMutate: async (subscribed) => {
+      await queryClient.cancelQueries({ queryKey: ["session", id] });
+      queryClient.setQueryData(["schedule"], (old: Schedule) => ({
+        ...old,
+        sessions: [
+          ...old.sessions.map((s) => (s.id === id ? { ...s, subscribed } : s)),
+        ],
+      }));
+      queryClient.setQueryData(["session", id], (old: SessionDetails) => ({
+        ...old,
+        subscribed,
+      }));
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["schedule"] });
+      queryClient.invalidateQueries({ queryKey: ["session", id] });
+    },
+  });
+};
 
 export type Profile = {
   name: string;

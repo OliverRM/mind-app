@@ -5,7 +5,6 @@ import { ErrorScreen, LoadingScreen } from "./InfoScreen";
 import SessionDetails from "./SessionDetails";
 import TitleBar from "./TitleBar";
 import { useSchedule } from "./dataSource";
-import { useGetWatchesSession } from "./settings";
 
 const hourOffset = 7;
 const hourHeight = "4rem";
@@ -20,8 +19,6 @@ const getSessionHeight = (start: string, end?: string) =>
     ${hourHeight})`;
 
 function Timetable() {
-  const getWatchesSession = useGetWatchesSession();
-
   const scrollRefs = useRef<{ [key: string]: HTMLDivElement }>({});
   const scrollElem = useRef<{ elem: HTMLDivElement | null }>({ elem: null });
 
@@ -139,11 +136,9 @@ function Timetable() {
                         backgroundColor: s.backgroundColor,
                         color: s.textColor,
                         border: s.border ? "1px solid #000" : "none",
-                        boxShadow:
-                          s.sessionId !== null &&
-                          getWatchesSession(s.sessionId.toString())
-                            ? "#274e90 0px 0px 0px 2px inset"
-                            : undefined,
+                        boxShadow: s.subscribed
+                          ? "#274e90 0px 0px 0px 2px inset"
+                          : undefined,
                       }}
                       onClick={
                         s.sessionId !== null

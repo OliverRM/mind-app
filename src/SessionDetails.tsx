@@ -1,14 +1,14 @@
 import moment from "moment";
 import { Close, Star } from "./Icons";
-import { useSessionDetails } from "./dataSource";
-import { useGetWatchesSession, useSetWatchesSession } from "./settings";
+import { useSetUser } from "./appContext";
+import { useSessionDetails, useSubscribeSession } from "./dataSource";
 
 const SessionDetails = (params: {
   sessionId: number;
   onClose?: React.MouseEventHandler<HTMLButtonElement>;
 }) => {
-  const getWatchesSession = useGetWatchesSession();
-  const setWatchesSession = useSetWatchesSession();
+  const setUser = useSetUser();
+  const subscribeSession = useSubscribeSession(params.sessionId);
 
   const query = useSessionDetails(params.sessionId);
 
@@ -44,13 +44,12 @@ const SessionDetails = (params: {
             <div>{session.location}</div>
           </div>
           <Star
-            filled={getWatchesSession(session.id.toString())}
+            filled={session.subscribed === true}
             className="h-8 text-amber-500"
             onClick={() =>
-              setWatchesSession(
-                session.id.toString(),
-                !getWatchesSession(session.id.toString()),
-              )
+              typeof session.subscribed === "boolean"
+                ? subscribeSession.mutate(!session.subscribed)
+                : setUser(null)
             }
           />
         </div>
