@@ -6,7 +6,7 @@ import { Refresh } from "./Icons";
 
 const TitleBar = (props: {
   children: ReactNode;
-  className: string;
+  className?: string;
   query: UseQueryResult;
 }) => {
   const query = props.query;
@@ -29,9 +29,9 @@ const TitleBar = (props: {
           Zuletzt aktualisiert: {moment(query.dataUpdatedAt).fromNow()}
         </div>
       ) : (
-        <div className="absolute bottom-1.5 left-0 right-0">
+        <header className="absolute bottom-1.5 left-0 right-0">
           {props.children}
-        </div>
+        </header>
       )}
     </div>
   );
