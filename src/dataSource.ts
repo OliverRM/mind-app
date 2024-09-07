@@ -4,31 +4,20 @@ import { useUser } from "./appContext";
 export const baseUrl = "https://mind-rp.oliverrm.de/api/v1";
 
 export type Wiki = {
-  articles: {
-    id: string;
-    title: string;
-    subtitle: string;
+  id: number;
+  name: string;
+  url: string;
   }[];
-};
 
 export const useWiki = () =>
   useQuery({
     queryKey: ["wiki"],
     queryFn: (): Promise<Wiki> =>
-      fetch(baseUrl + "/wiki").then((r) => r.json()),
-  });
-
-export type WikiArticle = {
-  id: string;
-  title: string;
-  content: string;
-};
-
-export const useWikiArticle = (id: string) =>
-  useQuery({
-    queryKey: ["wiki", id],
-    queryFn: (): Promise<WikiArticle> =>
-      fetch(baseUrl + "/wiki/article/" + id).then((r) => r.json()),
+      fetch(baseUrl + "/documents")
+        .then((r) => r.json())
+        .then((data: { name: string; url: string }[]) =>
+          data.map((a, i) => ({ id: i, ...a })),
+        ),
   });
 
 export type SessionPreview = Omit<SessionDetails, "description">;

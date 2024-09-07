@@ -25,7 +25,6 @@ import Login from "./Login";
 import Profile from "./Profile";
 import Timetable from "./Timetable";
 import Wiki from "./Wiki";
-import WikiArticle from "./WikiArticle";
 import { useSetUser, useUser } from "./appContext";
 
 const NavButton = (props: {
@@ -102,7 +101,6 @@ const App = () => {
               <Route path="/timetable" element={<Timetable />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/wiki" element={<Wiki />} />
-              <Route path="/wiki/:articleId" element={<WikiArticle />} />
             </Routes>
           </ErrorBoundary>
         </div>

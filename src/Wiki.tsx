@@ -1,9 +1,7 @@
-import { useNavigate } from "react-router-dom";
 import TitleBar from "./TitleBar";
 import { useWiki } from "./dataSource";
 
 const Wiki = () => {
-  const navigate = useNavigate();
   const wikiQuery = useWiki();
 
   if (wikiQuery.isLoading) {
@@ -21,17 +19,15 @@ const Wiki = () => {
       </TitleBar>
 
       <div className="grow overflow-y-scroll bg-white">
-        {wikiQuery.data.articles.map((article) => (
-          <div
+        {wikiQuery.data.map((article) => (
+          <a
             key={article.id}
             className="flex h-20 flex-col justify-center border-b border-gray-300 px-4 first:border-t"
-            onClick={() => navigate(`/wiki/${article.id}`, { state: article })}
+            href={article.url}
+            target="_blank"
           >
-            <div className="line-clamp-1 text-sm">{article.title}</div>
-            <div className="line-clamp-2 text-sm text-gray-500">
-              {article.subtitle}
-            </div>
-          </div>
+            <div className="text-sm">{article.name}</div>
+          </a>
         ))}
       </div>
     </div>
