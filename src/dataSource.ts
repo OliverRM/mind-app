@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { useUser } from "./appContext";
 
-export const baseUrl = "https://mind-rp.oliverrm.de/api/v1";
+export const baseUrl = "https://akademie-app.soeftware.de/api/v1";
 
 export type Wiki = {
   id: number;
   name: string;
   url: string;
-  }[];
+}[];
 
 export const useWiki = () =>
   useQuery({
