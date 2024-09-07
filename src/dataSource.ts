@@ -61,16 +61,17 @@ export const useSchedule = () =>
   });
 
 export type SessionDetails = {
-  id: string;
+  id: number;
   title: string;
-  referee: string | null;
-  type: string;
-  cancelled: boolean;
+  abstractDescription: string;
+  speaker: string;
+  speakerCV: string;
+  sessionType: string;
+  startTime: string;
+  endTime: string;
   location: string;
-  day: string;
-  timeStart: string;
-  timeEnd: string;
-  description: string;
+  changeFlag: "None" | "Added" | "Moved" | "Cancelled";
+  extraData: { label: string; value: string }[];
 };
 
 export const useSessionDetails = (id: number) =>

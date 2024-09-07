@@ -14,7 +14,8 @@ const SessionDetails = (params: {
 
   const session = query.data;
 
-  const fTime = (s: string) => moment("1970-01-01T" + s).format("HH:mm");
+  const fDay = (s: string) => moment(s).format("dddd");
+  const fTime = (s: string) => moment(s).format("HH:mm");
 
   // TODO: Return loading indicator
   if (!session) return null;
@@ -35,26 +36,41 @@ const SessionDetails = (params: {
         <div className="mb-4 mt-4 flex text-sm text-slate-600">
           <div className="flex-grow">
             <div>
-              {session.type}
-              {session.referee ? <> von {session.referee}</> : null}
+              {session.sessionType} von {session.speaker}
             </div>
             <div>
-              {`${session.day}, ${fTime(session.timeStart)} bis ${fTime(session.timeEnd)} Uhr`}
+              {`${fDay(session.startTime)}, ${fTime(session.startTime)} bis ${fTime(session.endTime)} Uhr`}
             </div>
             <div>{session.location}</div>
           </div>
           <Star
-            filled={getWatchesSession(session.id)}
+            filled={getWatchesSession(session.id.toString())}
             className="h-8 text-amber-500"
             onClick={() =>
-              setWatchesSession(session.id, !getWatchesSession(session.id))
+              setWatchesSession(
+                session.id.toString(),
+                !getWatchesSession(session.id.toString()),
+              )
             }
           />
         </div>
-        {session.cancelled ? (
+        {session.changeFlag === "Cancelled" ? (
           <div className="font-semibold text-red-700">Abgesagt</div>
         ) : null}
-        {session.description
+        {session.abstractDescription
+          ?.split("\n")
+          .filter((p) => p)
+          .map((p, i) => (
+            <p key={i} className="mt-2">
+              {p}
+            </p>
+          ))}
+        {session.speakerCV && (
+          <h2 className="mt-4 text-sm text-slate-500 underline">
+            Über der Redner:
+          </h2>
+        )}
+        {session.speakerCV
           ?.split("\n")
           .filter((p) => p)
           .map((p, i) => (
