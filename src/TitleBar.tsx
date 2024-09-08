@@ -20,11 +20,9 @@ const TitleBar = (props: {
       onClick={() => query.refetch()}
     >
       <Refresh className="absolute bottom-3 right-[calc(0.5rem+var(--safe-area-inset-right))] h-4 opacity-80" />
-      {query.isFetching ? (
+      {query.data && query.isFetching ? (
         <div className="absolute bottom-1.5 left-0 right-0 italic">Lädt...</div>
-      ) : moment(query.dataUpdatedAt).isBefore(
-          moment().subtract(5, "minutes"),
-        ) ? (
+      ) : query.data && query.isError ? (
         <div className="absolute bottom-2 left-0 right-0 text-sm">
           Zuletzt aktualisiert: {moment(query.dataUpdatedAt).fromNow()}
         </div>

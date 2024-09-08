@@ -1,7 +1,7 @@
 import moment from "moment";
 import "moment/dist/locale/de";
 import { useEffect, useRef, useState } from "react";
-import { ErrorScreen, LoadingScreen } from "./InfoScreen";
+import { QueryStateIndicator } from "./InfoScreen";
 import SessionDetails from "./SessionDetails";
 import TitleBar from "./TitleBar";
 import { useSchedule } from "./dataSource";
@@ -40,10 +40,15 @@ function Timetable() {
 
   const scheduleQuery = useSchedule();
 
-  if (scheduleQuery.isLoading) return <LoadingScreen />;
-
   if (!scheduleQuery.data)
-    return <ErrorScreen onClick={() => scheduleQuery.refetch()} />;
+    return (
+      <div className="flex h-full flex-col">
+        <TitleBar className="shrink-0" query={scheduleQuery}>
+          Mind-Akademie
+        </TitleBar>
+        <QueryStateIndicator className="grow bg-white" query={scheduleQuery} />
+      </div>
+    );
 
   return (
     <div className="flex h-full w-full">

@@ -1,4 +1,4 @@
-import { MouseEventHandler } from "react";
+import { UseQueryResult } from "@tanstack/react-query";
 import { twMerge } from "tailwind-merge";
 
 export const LoadingIndicator = (props: { className?: string }) => (
@@ -22,31 +22,39 @@ export const LoadingIndicator = (props: { className?: string }) => (
   </svg>
 );
 
-export const LoadingScreen = () => {
-  return (
-    <div className="flex h-screen w-screen flex-col items-center justify-center px-8 text-center text-[#F2F2F2]">
-      <h1 className="mb-8 text-4xl font-bold">Lädt...</h1>
-      <LoadingIndicator />
-    </div>
-  );
-};
-
-export const ErrorScreen = (params: {
-  onClick: MouseEventHandler<HTMLButtonElement>;
-}) => {
-  return (
-    <div className="flex h-screen w-screen flex-col items-center justify-center px-8 text-center text-[#F2F2F2]">
-      <h1 className="mb-8 text-4xl font-bold">Fehler</h1>
-      <p className="max-w-md text-xl">
-        Beim Laden der Daten ist ein Fehler aufgetreten. Hast Du eine aktive
-        Internetverbindung?
-      </p>
-      <button
-        className="mt-8 rounded-md bg-[#6487DC] px-4 py-2 font-bold"
-        onClick={params.onClick}
-      >
-        Erneut versuchen
-      </button>
-    </div>
-  );
-};
+export const QueryStateIndicator = (props: {
+  query: UseQueryResult;
+  className?: string;
+}) => (
+  <div
+    className={twMerge(
+      "flex flex-col items-center justify-center",
+      props.className,
+    )}
+  >
+    {props.query.isFetching ? (
+      <>
+        <div className="mb-8 text-2xl font-semibold text-bdazzled-700">
+          Lädt...
+        </div>
+        <LoadingIndicator />
+      </>
+    ) : (
+      <>
+        <div className="mb-4 text-2xl font-semibold text-vermilion-700">
+          Fehler
+        </div>
+        <p className="max-w-md text-center text-xl">
+          Beim Laden der Daten ist ein Fehler aufgetreten. Hast Du eine aktive
+          Internetverbindung?
+        </p>
+        <button
+          className="mt-8 rounded-md bg-bdazzled-700 px-4 py-2 font-bold text-white"
+          onClick={() => props.query.refetch()}
+        >
+          Erneut versuchen
+        </button>
+      </>
+    )}
+  </div>
+);

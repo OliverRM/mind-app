@@ -1,20 +1,23 @@
 import { Fragment } from "react/jsx-runtime";
 import { useSetUser } from "./appContext";
 import { useProfile } from "./dataSource";
+import { QueryStateIndicator } from "./InfoScreen";
 import TitleBar from "./TitleBar";
 
 const Profile = () => {
   const query = useProfile(),
-    { data, isLoading, isError } = query;
+    { data } = query;
   const setUser = useSetUser();
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (isError || !data) {
-    return <div>Error fetching profile data</div>;
-  }
+  if (!data)
+    return (
+      <div className="flex h-full flex-col">
+        <TitleBar className="shrink-0" query={query}>
+          Profil
+        </TitleBar>
+        <QueryStateIndicator className="grow bg-white" query={query} />
+      </div>
+    );
 
   return (
     <div className="grid h-full grid-rows-[auto,auto,1fr,auto]">
