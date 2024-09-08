@@ -1,4 +1,5 @@
 import { UseQueryResult } from "@tanstack/react-query";
+import { MouseEventHandler } from "react";
 import { twMerge } from "tailwind-merge";
 
 export const LoadingIndicator = (props: { className?: string }) => (
@@ -25,6 +26,7 @@ export const LoadingIndicator = (props: { className?: string }) => (
 export const QueryStateIndicator = (props: {
   query: UseQueryResult;
   className?: string;
+  onRefreshClick?: MouseEventHandler<HTMLButtonElement>;
 }) => (
   <div
     className={twMerge(
@@ -50,7 +52,7 @@ export const QueryStateIndicator = (props: {
         </p>
         <button
           className="mt-8 rounded-md bg-bdazzled-700 px-4 py-2 font-bold text-white"
-          onClick={() => props.query.refetch()}
+          onClick={props.onRefreshClick ?? (() => props.query.refetch())}
         >
           Erneut versuchen
         </button>
