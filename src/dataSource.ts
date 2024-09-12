@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useUser } from "./appContext";
+import { useSetUser, useUser } from "./appContext";
 import { queryClient } from "./query";
 
 export const baseUrl = "https://akademie-app.soeftware.de/api/v1";
@@ -99,6 +99,7 @@ export const useSessionDetails = (id: number) => {
 
 export const useSubscribeSession = (id: number) => {
   const token = useUser()?.token;
+  const setUser = useSetUser();
 
   return useMutation({
     mutationKey: ["subscribe", id],
@@ -111,6 +112,7 @@ export const useSubscribeSession = (id: number) => {
         }),
         body: subscribed.toString(),
       }).then((r) => {
+        if (r.status === 401) setUser(null);
         if (!r.ok) throw new Error(r.statusText);
       }),
     onMutate: async (subscribed) => {
@@ -140,6 +142,7 @@ export type Profile = {
 
 export const useProfile = () => {
   const token = useUser()?.token;
+  const setUser = useSetUser();
 
   return useQuery({
     queryKey: [token, "profile"],
@@ -149,6 +152,10 @@ export const useProfile = () => {
         headers: new Headers({
           Authorization: "Bearer " + token,
         }),
-      }).then((r) => r.json()),
+      }).then((r) => {
+        if (r.status === 401) setUser(null);
+        if (!r.ok) throw new Error(r.statusText);
+        return r.json();
+      }),
   });
 };
