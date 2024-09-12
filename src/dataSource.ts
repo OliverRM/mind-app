@@ -80,7 +80,16 @@ export type SessionDetails = {
   location: string;
   changeFlag: "None" | "Added" | "Moved" | "Cancelled";
   subscribed?: boolean;
-  extraData: { label: string; value: string }[];
+  feedback?:
+    | {
+        question: string;
+        type: string;
+        min: number | null;
+        max: number | null;
+        labels?: string[] | null;
+        answer: unknown;
+      }[]
+    | null;
 };
 
 export const useSessionDetails = (id: number) => {
@@ -130,6 +139,30 @@ export const useSubscribeSession = (id: number) => {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["schedule"] });
+      queryClient.invalidateQueries({ queryKey: ["session", id] });
+    },
+  });
+};
+
+export const useGiveFeedback = (id: number) => {
+  const token = useUser()?.token;
+  const setUser = useSetUser();
+
+  return useMutation({
+    mutationKey: ["feedback", id],
+    mutationFn: (answers: unknown[]) =>
+      fetch(baseUrl + "/sessions/" + id + "/feedback", {
+        method: "POST",
+        headers: new Headers({
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        }),
+        body: JSON.stringify(answers),
+      }).then((r) => {
+        if (r.status === 401) setUser(null);
+        if (!r.ok) throw new Error(r.statusText);
+      }),
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["session", id] });
     },
   });

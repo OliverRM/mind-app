@@ -20,12 +20,13 @@ import {
   useMatch,
   useNavigate,
 } from "react-router-dom";
+import { useSetUser, useUser } from "./appContext";
 import ErrorBoundary from "./ErrorBoundary";
+import Feedback from "./Feedback";
 import Login from "./Login";
 import Profile from "./Profile";
 import Timetable from "./Timetable";
 import Wiki from "./Wiki";
-import { useSetUser, useUser } from "./appContext";
 
 const NavButton = (props: {
   text: ReactNode;
@@ -99,6 +100,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Navigate to="/timetable" />} />
               <Route path="/timetable" element={<Timetable />} />
+              <Route path="/feedback/:sessionId" element={<Feedback />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/wiki" element={<Wiki />} />
             </Routes>

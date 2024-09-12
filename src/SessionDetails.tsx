@@ -1,4 +1,5 @@
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 import { useSetUser } from "./appContext";
 import { useSessionDetails, useSubscribeSession } from "./dataSource";
 import { Close, Star } from "./Icons";
@@ -8,6 +9,8 @@ const SessionDetails = (params: {
   sessionId: number;
   onClose: React.MouseEventHandler<HTMLButtonElement | HTMLDivElement>;
 }) => {
+  const navigate = useNavigate();
+
   const setUser = useSetUser();
   const subscribeSession = useSubscribeSession(params.sessionId);
 
@@ -64,6 +67,17 @@ const SessionDetails = (params: {
             {session.changeFlag === "Cancelled" ? (
               <div className="font-semibold text-red-700">Abgesagt</div>
             ) : null}
+            {session.feedback && (
+              <button
+                className="mb-4 mt-2 w-full rounded bg-bdazzled-700 p-2 text-white"
+                onClick={() => navigate(`/feedback/${session.id}`)}
+              >
+                Feedback{" "}
+                {session.feedback.some((f) => f.answer)
+                  ? "bearbeiten"
+                  : "geben"}
+              </button>
+            )}
             {session.abstractDescription
               ?.split("\n")
               .filter((p) => p)
