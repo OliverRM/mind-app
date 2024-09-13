@@ -1,4 +1,8 @@
 import {
+  CapacitorBarcodeScanner,
+  CapacitorBarcodeScannerTypeHint,
+} from "@capacitor/barcode-scanner";
+import {
   IconDefinition,
   faPen,
   faQrcode,
@@ -38,7 +42,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onGuestLogin = () => setUser({ token: null, guest: true });
-  const onPasswordLoginClick = async () => {
+  const login = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(baseUrl + "/auth/login", {
@@ -85,7 +89,13 @@ const Login = () => {
         <LoginButton
           className="bg-vermilion-500 active:bg-vermilion-700"
           icon={faQrcode}
-          onClick={() => alert("Diese Funktion ist noch nicht verfügbar.")}
+          onClick={async () => {
+            const { ScanResult } = await CapacitorBarcodeScanner.scanBarcode({
+              hint: CapacitorBarcodeScannerTypeHint.QR_CODE,
+            });
+            setManualLogin(ScanResult);
+            login();
+          }}
         >
           Ticket scannen
         </LoginButton>
@@ -120,7 +130,7 @@ const Login = () => {
             ) : (
               <LoginButton
                 className="mt-6 bg-vermilion-500 shadow-md active:bg-vermilion-700"
-                onClick={onPasswordLoginClick}
+                onClick={login}
               >
                 Anmelden
               </LoginButton>
