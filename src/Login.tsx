@@ -1,8 +1,4 @@
 import {
-  CapacitorBarcodeScanner,
-  CapacitorBarcodeScannerTypeHint,
-} from "@capacitor/barcode-scanner";
-import {
   IconDefinition,
   faPen,
   faQrcode,
@@ -42,12 +38,12 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onGuestLogin = () => setUser({ token: null, guest: true });
-  const login = async () => {
+  const login = async (ticketSecret: string) => {
     setIsLoading(true);
     try {
       const response = await fetch(baseUrl + "/auth/login", {
         method: "POST",
-        body: JSON.stringify({ ticketSecret: manualLogin }),
+        body: JSON.stringify({ ticketSecret }),
         headers: {
           "Content-Type": "application/json",
         },
@@ -90,11 +86,14 @@ const Login = () => {
           className="bg-vermilion-500 active:bg-vermilion-700"
           icon={faQrcode}
           onClick={async () => {
+            // Dynamically import the barcode scanner as the library is fairly huge.
+            const { CapacitorBarcodeScanner, CapacitorBarcodeScannerTypeHint } =
+              await import("@capacitor/barcode-scanner");
             const { ScanResult } = await CapacitorBarcodeScanner.scanBarcode({
               hint: CapacitorBarcodeScannerTypeHint.QR_CODE,
             });
             setManualLogin(ScanResult);
-            login();
+            login(ScanResult);
           }}
         >
           Ticket scannen
@@ -130,7 +129,7 @@ const Login = () => {
             ) : (
               <LoginButton
                 className="mt-6 bg-vermilion-500 shadow-md active:bg-vermilion-700"
-                onClick={login}
+                onClick={() => login(manualLogin)}
               >
                 Anmelden
               </LoginButton>
