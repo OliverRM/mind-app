@@ -28,7 +28,7 @@ const loadFromStorage = (): AppContextData => {
     const isGuest = localStorage.getItem(IS_GUEST);
     if (isGuest === "true") return { user: { token: null, guest: true } };
     return { user: null };
-  } catch (e) {
+  } catch {
     return { user: null };
   }
 };

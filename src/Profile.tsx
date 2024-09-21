@@ -21,7 +21,7 @@ const Profile = () => {
           .getContext("2d")
           ?.clearRect(0, 0, qrCanvas.current.width, qrCanvas.current.height);
     }
-  }, [data?.qrCode, qrCanvas.current]);
+  }, [data?.qrCode]);
 
   if (!data)
     return (

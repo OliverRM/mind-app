@@ -214,7 +214,7 @@ export const useTakeHelpTask = (id: number) => {
         if (r.status === 401) setUser(null);
         if (!r.ok) throw new Error(r.statusText);
       }),
-    async onSuccess(_data, variables, _context) {
+    async onSuccess(_data, variables) {
       await queryClient.cancelQueries({ queryKey: ["helpTasks"] });
       queryClient.setQueryData(["helpTasks"], (old: HelpTask[]) => [
         ...old.map(
