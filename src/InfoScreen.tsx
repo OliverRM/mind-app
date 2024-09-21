@@ -1,6 +1,8 @@
 import { UseQueryResult } from "@tanstack/react-query";
 import { MouseEventHandler } from "react";
+import { useNavigate } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
+import { useSetUser } from "./appContext";
 
 export const LoadingIndicator = (props: { className?: string }) => (
   <svg
@@ -27,36 +29,50 @@ export const QueryStateIndicator = (props: {
   query: UseQueryResult;
   className?: string;
   onRefreshClick?: MouseEventHandler<HTMLButtonElement>;
-}) => (
-  <div
-    className={twMerge(
-      "flex flex-col items-center justify-center",
-      props.className,
-    )}
-  >
-    {props.query.isFetching ? (
-      <>
-        <div className="mb-8 text-2xl font-semibold text-bdazzled-700">
-          Lädt...
-        </div>
-        <LoadingIndicator />
-      </>
-    ) : (
-      <>
-        <div className="mb-4 text-2xl font-semibold text-vermilion-700">
-          Fehler
-        </div>
-        <p className="max-w-md text-center text-xl">
-          Beim Laden der Daten ist ein Fehler aufgetreten. Hast Du eine aktive
-          Internetverbindung?
-        </p>
-        <button
-          className="mt-8 rounded-md bg-bdazzled-700 px-4 py-2 font-bold text-white"
-          onClick={props.onRefreshClick ?? (() => props.query.refetch())}
-        >
-          Erneut versuchen
-        </button>
-      </>
-    )}
-  </div>
-);
+}) => {
+  const setUser = useSetUser();
+  const navigate = useNavigate();
+
+  return (
+    <div
+      className={twMerge(
+        "flex flex-col items-center justify-center",
+        props.className,
+      )}
+    >
+      {props.query.isFetching ? (
+        <>
+          <div className="mb-8 text-2xl font-semibold text-bdazzled-700">
+            Lädt...
+          </div>
+          <LoadingIndicator />
+        </>
+      ) : (
+        <>
+          <div className="mb-4 text-2xl font-semibold text-vermilion-700">
+            Fehler
+          </div>
+          <p className="max-w-md text-center text-xl">
+            Beim Laden der Daten ist ein Fehler aufgetreten. Hast Du eine aktive
+            Internetverbindung?
+          </p>
+          <button
+            className="mt-8 w-64 rounded-md bg-bdazzled-700 px-4 py-2 font-bold text-white"
+            onClick={props.onRefreshClick ?? (() => props.query.refetch())}
+          >
+            Erneut versuchen
+          </button>
+          <button
+            className="mt-4 w-64 rounded-md border border-vermilion-700 px-4 py-2 font-semibold text-vermilion-700"
+            onClick={() => {
+              setUser(null);
+              navigate("/");
+            }}
+          >
+            Abmelden
+          </button>
+        </>
+      )}
+    </div>
+  );
+};

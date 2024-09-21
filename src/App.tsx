@@ -113,7 +113,12 @@ const App = () => {
               <Route path="/timetable" element={<Timetable />} />
               <Route path="/feedback/:sessionId" element={<Feedback />} />
               <Route path="/helptasks/*" element={<HelpTasks />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route
+                path="/profile"
+                element={
+                  user.guest === false ? <Profile /> : <Navigate to="/" />
+                }
+              />
               <Route path="/wiki" element={<Wiki />} />
             </Routes>
           </ErrorBoundary>
