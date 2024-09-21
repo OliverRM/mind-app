@@ -45,6 +45,8 @@ export type Schedule = {
     timeEnd: string;
     textColor: string;
     backgroundColor: string;
+textColorHighlighted?: string;
+    backgroundColorHighlighted?: string;
     border: boolean;
     day: number;
     columnStart: number;

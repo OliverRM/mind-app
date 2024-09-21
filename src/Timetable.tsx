@@ -15,8 +15,14 @@ const getSessionHeight = (start: string, end?: string) =>
       ? new Date(`1970-01-01T${start}Z`).getTime() / 1000 / 60 / 60 - hourOffset
       : new Date(`1970-01-01T${end}Z`).getTime() / 1000 / 60 / 60 -
         new Date(`1970-01-01T${start}Z`).getTime() / 1000 / 60 / 60
-  } *
-    ${hourHeight})`;
+  } * ${hourHeight})`;
+const getSessionCenter = (start: string, end: string) =>
+  `calc(${
+    (new Date(`1970-01-01T${start}Z`).getTime() / 1000 / 60 / 60 +
+      new Date(`1970-01-01T${end}Z`).getTime() / 1000 / 60 / 60) /
+      2 -
+    hourOffset
+  } * ${hourHeight})`;
 
 function Timetable() {
   const scrollRefs = useRef<{ [key: string]: HTMLDivElement }>({});
@@ -103,7 +109,7 @@ function Timetable() {
                 </div>
               ))}
             </div>
-            {/* Sessions */}
+            {/* Session labels */}
             <div
               className="flex-grow overflow-x-hidden overflow-y-scroll"
               ref={(el) => {
@@ -124,7 +130,6 @@ function Timetable() {
                   .filter((s) => s.day === dayId)
                   .map((s) => (
                     <div
-                      className="flex flex-col justify-center bg-white p-px text-center text-xs"
                       style={{
                         position: "absolute",
                         top: `calc(${getSessionHeight(s.timeStart)} - 1px)`,
@@ -138,12 +143,15 @@ function Timetable() {
                           s.timeStart,
                           s.timeEnd,
                         )} + 1px)`,
-                        backgroundColor: s.backgroundColor,
-                        color: s.textColor,
+                        backgroundColor:
+                          (s.subscribed && s.backgroundColorHighlighted) ||
+                          s.backgroundColor,
                         border: s.border ? "1px solid #000" : "none",
-                        boxShadow: s.subscribed
-                          ? "#274e90 0px 0px 0px 2px inset"
-                          : undefined,
+                        // Legacy highlight effect
+                        boxShadow:
+                          s.subscribed && !s.backgroundColorHighlighted
+                            ? "#274e90 0px 0px 0px 2px inset"
+                            : undefined,
                       }}
                       onClick={
                         s.sessionId !== null
@@ -151,15 +159,41 @@ function Timetable() {
                           : undefined
                       }
                       key={s.id}
+                    />
+                  ))}
+                {/* Session texts */}
+                {scheduleQuery.data.sessions
+                  .filter((s) => s.day === dayId)
+                  .map((s) => (
+                    <div
+                      className="pointer-events-none flex flex-col items-center justify-center overflow-visible whitespace-nowrap bg-green-500 bg-opacity-20 text-center text-xs"
+                      style={{
+                        position: "absolute",
+                        top: getSessionCenter(s.timeStart, s.timeEnd),
+                        left: `calc(${
+                          (s.columnStart + s.columnEnd + 1) /
+                          (2 * day.columns.length)
+                        }* (100% + 1px) - 1px`,
+                        width: 0,
+                        height: 0,
+                        color:
+                          (s.subscribed && s.textColorHighlighted) ||
+                          s.textColor,
+                      }}
+                      key={s.id}
                     >
-                      <div
-                        className={s.cancelled ? "line-through opacity-50" : ""}
-                      >
-                        <>
-                          <div className="font-semibold">{s.title}</div>
-                          {s.subtitle !== null && <div>{s.subtitle}</div>}
-                        </>
+                      <div className="font-semibold">
+                        {s.title
+                          .split("\n")
+                          .flatMap((l, i) => (i === 0 ? [l] : [<br />, l]))}
                       </div>
+                      {s.subtitle !== null && (
+                        <div>
+                          {s.subtitle
+                            .split("\n")
+                            .flatMap((l, i) => (i === 0 ? [l] : [<br />, l]))}
+                        </div>
+                      )}
                     </div>
                   ))}
                 {/* Current time indicator */}
