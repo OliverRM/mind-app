@@ -170,6 +170,7 @@ export const useGiveFeedback = (id: number) => {
 
 export type Profile = {
   name: string;
+  qrCode: string | null;
   extraData: { label: string; value: string }[];
 };
 

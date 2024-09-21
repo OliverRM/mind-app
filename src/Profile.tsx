@@ -1,3 +1,5 @@
+import { toCanvas } from "qrcode";
+import { useEffect, useRef } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { useSetUser } from "./appContext";
 import { useProfile } from "./dataSource";
@@ -8,6 +10,18 @@ const Profile = () => {
   const query = useProfile(),
     { data } = query;
   const setUser = useSetUser();
+
+  const qrCanvas = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (qrCanvas.current) {
+      if (data?.qrCode) toCanvas(qrCanvas.current, data.qrCode);
+      else
+        qrCanvas.current
+          .getContext("2d")
+          ?.clearRect(0, 0, qrCanvas.current.width, qrCanvas.current.height);
+    }
+  }, [data?.qrCode, qrCanvas.current]);
 
   if (!data)
     return (
@@ -20,12 +34,19 @@ const Profile = () => {
     );
 
   return (
-    <div className="grid h-full grid-rows-[auto,auto,1fr,auto]">
+    <div className="grid h-full grid-rows-[auto,16rem,1fr,auto]">
       <TitleBar query={query}>Profil</TitleBar>
-      <h2 className="z-10 col-start-1 row-start-2 h-36 border-b border-neutral-300 border-opacity-20 bg-white bg-opacity-80 pt-20 text-center text-lg font-semibold text-bdazzled-700 backdrop-blur-sm">
-        {data.name}
-      </h2>
-      <div className="scrollbar-hide col-start-1 row-span-3 row-start-2 grow overflow-y-scroll bg-white p-4 py-40">
+      <div className="z-10 col-start-1 row-start-2 border-b border-neutral-300 border-opacity-20 bg-white bg-opacity-80 text-center backdrop-blur-sm">
+        <h2 className="mt-20 text-lg font-semibold text-bdazzled-700">
+          {data.name}
+        </h2>
+        <canvas
+          className="mt-2 inline-block h-24 w-24 text-center"
+          ref={qrCanvas}
+        />
+      </div>
+      <div className="scrollbar-hide col-start-1 row-span-3 row-start-2 grow overflow-y-scroll bg-white p-4 py-4">
+        <div className="h-[16rem]" />
         {data.extraData.map((item) => (
           <Fragment key={item.label}>
             <div className="text-sm text-neutral-500">{item.label}:</div>
