@@ -73,9 +73,9 @@ export const useSchedule = () => {
 export type SessionDetails = {
   id: number;
   title: string;
-  abstractDescription: string;
-  speaker: string;
-  speakerCV: string;
+  abstractDescription: string | null;
+  speaker: string | null;
+  speakerCV: string | null;
   sessionType: string;
   startTime: string;
   endTime: string;

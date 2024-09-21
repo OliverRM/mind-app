@@ -1,9 +1,32 @@
+import Markdown, { MarkdownToJSX } from "markdown-to-jsx";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { useSetUser } from "./appContext";
 import { useSessionDetails, useSubscribeSession } from "./dataSource";
 import { Close, Star } from "./Icons";
 import { QueryStateIndicator } from "./InfoScreen";
+
+const markdownOptions: MarkdownToJSX.Options = {
+  overrides: {
+    a: {
+      component: (props) => (
+        <a
+          {...props}
+          className="text-bdazzled-700 underline"
+          target="_blank"
+          rel="noreferrer"
+        />
+      ),
+    },
+    h1: {
+      props: { className: "mb-2 mt-4 font-semibold" },
+    },
+    h2: { props: { className: "mb-2 mt-4 font-semibold" } },
+    ol: { props: { className: "mb-4 ml-6 list-disc" } },
+    p: { props: { className: "mb-2" } },
+    ul: { props: { className: "mb-2 ml-6 list-decimal" } },
+  },
+};
 
 const SessionDetails = (params: {
   sessionId: number;
@@ -47,7 +70,8 @@ const SessionDetails = (params: {
             <div className="mb-4 mt-4 flex text-sm text-slate-600">
               <div className="flex-grow">
                 <div>
-                  {session.sessionType} von {session.speaker}
+                  {session.sessionType}
+                  {session.speaker !== null ? ` von ${session.speaker}` : ""}
                 </div>
                 <div>
                   {`${fDay(session.startTime)}, ${fTime(session.startTime)} bis ${fTime(session.endTime)} Uhr`}
@@ -78,27 +102,21 @@ const SessionDetails = (params: {
                   : "geben"}
               </button>
             )}
-            {session.abstractDescription
-              ?.split("\n")
-              .filter((p) => p)
-              .map((p, i) => (
-                <p key={i} className="mt-2">
-                  {p}
-                </p>
-              ))}
-            {session.speakerCV && (
-              <h2 className="mt-4 text-sm text-slate-500 underline">
-                Über der Redner:
-              </h2>
+            {session.abstractDescription && (
+              <Markdown options={markdownOptions}>
+                {session.abstractDescription}
+              </Markdown>
             )}
-            {session.speakerCV
-              ?.split("\n")
-              .filter((p) => p)
-              .map((p, i) => (
-                <p key={i} className="mt-2">
-                  {p}
-                </p>
-              ))}
+            {session.speakerCV && (
+              <>
+                <h2 className="mt-4 text-sm text-neutral-500 underline">
+                  Über {session.speaker || "den Redner"}:
+                </h2>
+                <Markdown options={markdownOptions}>
+                  {session.speakerCV}
+                </Markdown>
+              </>
+            )}
           </>
         ) : (
           <QueryStateIndicator
