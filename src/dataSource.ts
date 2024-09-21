@@ -168,6 +168,31 @@ export const useGiveFeedback = (id: number) => {
   });
 };
 
+export type HelpTask = {
+  id: number;
+  name: string;
+  descriptionUrl: string | null;
+  startTime: string;
+  endTime: string;
+  location: string;
+  slotCount: number;
+  status: "Available" | "Unavailable" | "Yours";
+  assignedTo: (string | null)[];
+};
+export const useHelpTasks = () => {
+  const token = useUser()?.token;
+
+  return useQuery({
+    queryKey: ["helpTasks"],
+    queryFn: (): Promise<HelpTask[]> =>
+      fetch(baseUrl + "/helpTasks", {
+        headers: token
+          ? new Headers({ Authorization: "Bearer " + token })
+          : undefined,
+      }).then((r) => r.json()),
+  });
+};
+
 export type Profile = {
   name: string;
   qrCode: string | null;

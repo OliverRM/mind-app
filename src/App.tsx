@@ -1,11 +1,13 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
   faCalendar as faCalendarOutline,
+  faLemon as faLemonOutline,
   faLightbulb as faLightbulbOutline,
   faUser as faUserOutline,
 } from "@fortawesome/free-regular-svg-icons";
 import {
   faCalendar as faCalendarSolid,
+  faLemon as faLemonSolid,
   faLightbulb as faLightbulbSolid,
   faUser as faUserSolid,
 } from "@fortawesome/free-solid-svg-icons";
@@ -23,6 +25,7 @@ import {
 import { useSetUser, useUser } from "./appContext";
 import ErrorBoundary from "./ErrorBoundary";
 import Feedback from "./Feedback";
+import HelpTasks from "./helpTasks";
 import Login from "./Login";
 import Profile from "./Profile";
 import Timetable from "./Timetable";
@@ -33,10 +36,11 @@ const NavButton = (props: {
   iconSelected: IconProp;
   iconUnselected: IconProp;
   target: To & Parameters<typeof useMatch>[0];
+  pattern?: Parameters<typeof useMatch>[0];
   onClick?: MouseEventHandler<HTMLButtonElement>;
 }) => {
   const navigate = useNavigate();
-  const match = useMatch(props.target);
+  const match = useMatch(props.pattern ?? props.target);
 
   const isSelected = !!match;
 
@@ -74,6 +78,13 @@ const TabBar = () => {
         target="/timetable"
       />
       <NavButton
+        text="Dienste"
+        iconSelected={faLemonSolid}
+        iconUnselected={faLemonOutline}
+        target="/helptasks"
+        pattern="/helptasks/*"
+      />
+      <NavButton
         text="Profil"
         iconSelected={faUserSolid}
         iconUnselected={faUserOutline}
@@ -101,6 +112,7 @@ const App = () => {
               <Route path="/" element={<Navigate to="/timetable" />} />
               <Route path="/timetable" element={<Timetable />} />
               <Route path="/feedback/:sessionId" element={<Feedback />} />
+              <Route path="/helptasks/*" element={<HelpTasks />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/wiki" element={<Wiki />} />
             </Routes>
