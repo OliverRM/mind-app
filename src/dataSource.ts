@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSetUser, useUser } from "./appContext";
 import { queryClient } from "./query";
 
-export const baseUrl = "https://akademie-app.soeftware.de/api/v1";
+export const baseUrl = "https://akademie-app.mind-hochschul-netzwerk.de/api/v1";
 
 export type Wiki = {
   id: number;
