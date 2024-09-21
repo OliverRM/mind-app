@@ -2,17 +2,20 @@ import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import { Route, Routes, useNavigate, useParams } from "react-router-dom";
-import { useUser } from "./appContext";
-import { useHelpTasks } from "./dataSource";
+import { useSetUser, useUser } from "./appContext";
+import { useHelpTasks, useTakeHelpTask } from "./dataSource";
 import { Close } from "./Icons";
-import { QueryStateIndicator } from "./InfoScreen";
+import { LoadingIndicator, QueryStateIndicator } from "./InfoScreen";
 import TitleBar from "./TitleBar";
 
 const TaskDetails = () => {
   const taskId = Number.parseInt(useParams()["taskId"] ?? "");
   const navigate = useNavigate();
   const user = useUser();
+  const setUser = useSetUser();
+
   const query = useHelpTasks();
+  const takeHelpTask = useTakeHelpTask(taskId);
 
   const task = query.data?.find((task) => task.id === taskId);
 
@@ -91,12 +94,26 @@ const TaskDetails = () => {
                 )}
               </>
             )}
-            {task.status === "Available" ? (
-              <button className="mt-8 w-full rounded bg-bdazzled-700 p-2 text-white">
+            {takeHelpTask.isPending ? (
+              <LoadingIndicator className="mt-8 w-full" />
+            ) : task.status === "Available" ? (
+              <button
+                className="mt-8 w-full rounded bg-bdazzled-700 p-2 text-white"
+                onClick={() =>
+                  user?.guest === true
+                    ? setUser(null)
+                    : takeHelpTask.mutateAsync(true).catch((e) => alert(e))
+                }
+              >
                 Anmelden
               </button>
             ) : task.status === "Yours" ? (
-              <button className="mt-8 w-full rounded bg-vermilion-700 p-2 text-white">
+              <button
+                className="mt-8 w-full rounded bg-vermilion-700 p-2 text-white"
+                onClick={() =>
+                  takeHelpTask.mutateAsync(false).catch((e) => alert(e))
+                }
+              >
                 Abmelden
               </button>
             ) : null}

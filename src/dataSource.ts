@@ -45,7 +45,7 @@ export type Schedule = {
     timeEnd: string;
     textColor: string;
     backgroundColor: string;
-textColorHighlighted?: string;
+    textColorHighlighted?: string;
     backgroundColorHighlighted?: string;
     border: boolean;
     day: number;
@@ -192,6 +192,42 @@ export const useHelpTasks = () => {
           ? new Headers({ Authorization: "Bearer " + token })
           : undefined,
       }).then((r) => r.json()),
+  });
+};
+
+export const useTakeHelpTask = (id: number) => {
+  const token = useUser()?.token;
+  const setUser = useSetUser();
+
+  return useMutation({
+    mutationKey: ["takeHelpTask", id],
+    mutationFn: (take: boolean) =>
+      fetch(
+        `${baseUrl}/helpTasks/${id}/${take ? "take?publishName=true" : "release"}`,
+        {
+          method: "POST",
+          headers: new Headers({
+            Authorization: "Bearer " + token,
+          }),
+        },
+      ).then((r) => {
+        if (r.status === 401) setUser(null);
+        if (!r.ok) throw new Error(r.statusText);
+      }),
+    async onSuccess(_data, variables, _context) {
+      await queryClient.cancelQueries({ queryKey: ["helpTasks"] });
+      queryClient.setQueryData(["helpTasks"], (old: HelpTask[]) => [
+        ...old.map(
+          (t): HelpTask =>
+            t.id === id
+              ? { ...t, status: variables ? "Yours" : "Available" }
+              : t,
+        ),
+      ]);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["helpTasks"] });
+    },
   });
 };
 
