@@ -79,8 +79,9 @@ export type SessionDetails = {
   sessionType: string;
   startTime: string;
   endTime: string;
-  location: string;
+  location: string | null;
   changeFlag: "None" | "Added" | "Moved" | "Cancelled";
+  bookable?: boolean;
   subscribed?: boolean;
   feedback?:
     | {
@@ -92,6 +93,7 @@ export type SessionDetails = {
         answer: unknown;
       }[]
     | null;
+  extraData: { label: string; value: string }[];
 };
 
 export const useSessionDetails = (id: number) => {
@@ -105,6 +107,36 @@ export const useSessionDetails = (id: number) => {
           ? new Headers({ Authorization: "Bearer " + token })
           : undefined,
       }).then((r) => r.json()),
+  });
+};
+
+export const useBookSession = (id: number) => {
+  const token = useUser()?.token;
+  const setUser = useSetUser();
+
+  return useMutation({
+    mutationKey: ["book", id],
+    mutationFn: (book: boolean) =>
+      fetch(baseUrl + "/sessions/" + id + "/book", {
+        method: "POST",
+        headers: new Headers({
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        }),
+        body: book.toString(),
+      }).then((r) => {
+        if (r.status === 401) setUser(null);
+        if (!r.ok) throw new Error(r.statusText);
+      }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["schedule"] });
+      queryClient.cancelQueries({ queryKey: ["session", id] });
+      queryClient.setQueryData(["session", id], (old: SessionDetails) => ({
+        ...old,
+        bookable: false,
+      }));
+      queryClient.invalidateQueries({ queryKey: ["session", id] });
+    },
   });
 };
 

@@ -1,6 +1,6 @@
 import Markdown, { MarkdownToJSX } from "markdown-to-jsx";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   Route,
   Routes,
@@ -9,10 +9,15 @@ import {
   useParams,
 } from "react-router-dom";
 import { useSetUser } from "./appContext";
-import { useSessionDetails, useSubscribeSession } from "./dataSource";
+import {
+  type SessionDetails,
+  useBookSession,
+  useSessionDetails,
+  useSubscribeSession,
+} from "./dataSource";
 import Feedback from "./Feedback";
 import { Close, Star } from "./Icons";
-import { QueryStateIndicator } from "./InfoScreen";
+import { LoadingIndicator, QueryStateIndicator } from "./InfoScreen";
 
 const markdownOptions: MarkdownToJSX.Options = {
   overrides: {
@@ -34,6 +39,55 @@ const markdownOptions: MarkdownToJSX.Options = {
     p: { props: { className: "mb-2" } },
     ul: { props: { className: "mb-2 ml-6 list-decimal" } },
   },
+};
+
+const Registration = (props: { session: SessionDetails }) => {
+  const navigate = useNavigate();
+  const bookSession = useBookSession(props.session.id);
+
+  return (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-75"
+      onClick={() => navigate(-1)}
+    >
+      <div
+        className="inset-safe absolute mx-8 my-auto h-64 rounded-xl bg-white p-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className="mb-4 mt-8 text-center text-xl font-semibold text-vermilion-700">
+          Anmelden
+        </h2>
+        <div className="mb-8">
+          Möchtest du dich für <i>{props.session.title}</i> anmelden?
+        </div>
+        {bookSession.isPending ? (
+          <div className="flex justify-center">
+            <LoadingIndicator />
+          </div>
+        ) : (
+          <div className="flex justify-stretch">
+            <button
+              className="grow basis-0 rounded border border-bdazzled-700 p-2 text-bdazzled-700"
+              onClick={() => navigate(-1)}
+            >
+              Abbrechen
+            </button>
+            <button
+              className="ml-2 grow basis-0 rounded bg-bdazzled-700 p-2 text-white"
+              onClick={() =>
+                bookSession
+                  .mutateAsync(true)
+                  .then(() => navigate(-1))
+                  .catch((e) => alert(e))
+              }
+            >
+              Anmelden
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 const SessionDetails = () => {
@@ -92,7 +146,7 @@ const SessionDetails = () => {
               </button>
             </div>
             <hr className="border-[#d54839]" />
-            <div className="mb-4 mt-4 flex text-sm text-slate-600">
+            <div className="mb-4 mt-4 flex text-sm text-neutral-500">
               <div className="flex-grow">
                 <div>
                   {session.sessionType}
@@ -113,9 +167,23 @@ const SessionDetails = () => {
                 }
               />
             </div>
+            {session.extraData.map((item) => (
+              <Fragment key={item.label}>
+                <div className="text-sm text-neutral-500">{item.label}:</div>
+                <div className="mb-2 whitespace-pre-wrap">{item.value}</div>
+              </Fragment>
+            ))}
             {session.changeFlag === "Cancelled" ? (
               <div className="font-semibold text-red-700">Abgesagt</div>
             ) : null}
+            {session.bookable && (
+              <button
+                className="mb-4 mt-2 w-full rounded bg-vermilion-700 p-2 text-white"
+                onClick={() => navigate("register")}
+              >
+                Anmelden
+              </button>
+            )}
             {session.feedback &&
               feedbackDelay <= 0 &&
               (session.feedback.some((f) => f.answer) ? (
@@ -161,6 +229,10 @@ const SessionDetails = () => {
         )}
       </div>
       <Routes>
+        <Route
+          path="register"
+          element={session && <Registration session={session} />}
+        />
         <Route path="/feedback" element={<Feedback />} />
       </Routes>
     </div>
