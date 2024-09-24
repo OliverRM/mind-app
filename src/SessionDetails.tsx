@@ -1,5 +1,6 @@
 import Markdown, { MarkdownToJSX } from "markdown-to-jsx";
 import moment from "moment";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSetUser } from "./appContext";
 import { useSessionDetails, useSubscribeSession } from "./dataSource";
@@ -43,6 +44,19 @@ const SessionDetails = (params: {
 
   const fDay = (s: string) => moment(s).format("dddd");
   const fTime = (s: string) => moment(s).format("HH:mm");
+
+  const [feedbackDelay, setFeedbackDelay] = useState(
+    session ? new Date(session.startTime).getTime() - Date.now() : Number.NaN,
+  );
+
+  useEffect(() => {
+    if (feedbackDelay > 0) {
+      const timeout = setTimeout(() => {
+        setFeedbackDelay(0);
+      }, feedbackDelay);
+      return () => clearTimeout(timeout);
+    }
+  }, [feedbackDelay]);
 
   return (
     <div
@@ -91,17 +105,23 @@ const SessionDetails = (params: {
             {session.changeFlag === "Cancelled" ? (
               <div className="font-semibold text-red-700">Abgesagt</div>
             ) : null}
-            {session.feedback && (
-              <button
-                className="mb-4 mt-2 w-full rounded bg-bdazzled-700 p-2 text-white"
-                onClick={() => navigate(`/feedback/${session.id}`)}
-              >
-                Feedback{" "}
-                {session.feedback.some((f) => f.answer)
-                  ? "bearbeiten"
-                  : "geben"}
-              </button>
-            )}
+            {session.feedback &&
+              feedbackDelay <= 0 &&
+              (session.feedback.some((f) => f.answer) ? (
+                <button
+                  className="mb-4 mt-2 w-full rounded border border-bdazzled-700 p-2 text-bdazzled-700"
+                  onClick={() => navigate(`/feedback/${session.id}`)}
+                >
+                  Feedback bearbeiten
+                </button>
+              ) : (
+                <button
+                  className="mb-4 mt-2 w-full rounded bg-bdazzled-700 p-2 text-white"
+                  onClick={() => navigate(`/feedback/${session.id}`)}
+                >
+                  Feedback geben
+                </button>
+              ))}
             {session.abstractDescription && (
               <Markdown options={markdownOptions}>
                 {session.abstractDescription}
