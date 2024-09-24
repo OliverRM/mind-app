@@ -25,10 +25,10 @@ import {
 import { useSetUser, useUser } from "./appContext";
 import ErrorBoundary from "./ErrorBoundary";
 import Feedback from "./Feedback";
-import HelpTasks from "./helpTasks";
+import HelpTasks from "./HelpTasks";
 import Login from "./Login";
 import Profile from "./Profile";
-import Timetable from "./Timetable";
+import Schedule from "./Schedule";
 import Wiki from "./Wiki";
 
 const NavButton = (props: {
@@ -110,7 +110,7 @@ const App = () => {
           <ErrorBoundary>
             <Routes>
               <Route path="/" element={<Navigate to="/timetable" />} />
-              <Route path="/timetable" element={<Timetable />} />
+              <Route path="/timetable" element={<Schedule />} />
               <Route path="/feedback/:sessionId" element={<Feedback />} />
               <Route path="/helptasks/*" element={<HelpTasks />} />
               <Route

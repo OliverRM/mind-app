@@ -24,7 +24,7 @@ const getSessionCenter = (start: string, end: string) =>
     hourOffset
   } * ${hourHeight})`;
 
-function Timetable() {
+function Schedule() {
   const scrollRefs = useRef<{ [key: string]: HTMLDivElement }>({});
   const scrollElem = useRef<{ elem: HTMLDivElement | null }>({ elem: null });
 
@@ -211,4 +211,4 @@ function Timetable() {
   );
 }
 
-export default Timetable;
+export default Schedule;
