@@ -104,6 +104,15 @@ const Login = () => {
         <LoginButton onClick={onGuestLogin}>
           Ohne Anmeldung fortfahren
         </LoginButton>
+        <a
+          className="mt-4 text-center text-sm text-neutral-200"
+          href="https://www.mind-hochschul-netzwerk.de/datenschutz"
+          target="_blank"
+        >
+          Mit der Anmeldung in der App erkläre ich mich mit
+          <br />
+          der <u>Datenschutzerklärung</u> einverstanden.
+        </a>
       </div>
       {manualLogin !== null && (
         <div
