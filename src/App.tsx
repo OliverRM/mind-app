@@ -24,7 +24,6 @@ import {
 } from "react-router-dom";
 import { useSetUser, useUser } from "./appContext";
 import ErrorBoundary from "./ErrorBoundary";
-import Feedback from "./Feedback";
 import HelpTasks from "./HelpTasks";
 import Login from "./Login";
 import Profile from "./Profile";
@@ -76,6 +75,7 @@ const TabBar = () => {
         iconSelected={faCalendarSolid}
         iconUnselected={faCalendarOutline}
         target="/timetable"
+        pattern="/timetable/*"
       />
       <NavButton
         text="Dienste"
@@ -110,8 +110,7 @@ const App = () => {
           <ErrorBoundary>
             <Routes>
               <Route path="/" element={<Navigate to="/timetable" />} />
-              <Route path="/timetable" element={<Schedule />} />
-              <Route path="/feedback/:sessionId" element={<Feedback />} />
+              <Route path="/timetable/*" element={<Schedule />} />
               <Route path="/helptasks/*" element={<HelpTasks />} />
               <Route
                 path="/profile"

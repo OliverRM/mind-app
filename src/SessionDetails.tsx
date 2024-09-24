@@ -1,9 +1,16 @@
 import Markdown, { MarkdownToJSX } from "markdown-to-jsx";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  useMatch,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { useSetUser } from "./appContext";
 import { useSessionDetails, useSubscribeSession } from "./dataSource";
+import Feedback from "./Feedback";
 import { Close, Star } from "./Icons";
 import { QueryStateIndicator } from "./InfoScreen";
 
@@ -29,16 +36,15 @@ const markdownOptions: MarkdownToJSX.Options = {
   },
 };
 
-const SessionDetails = (params: {
-  sessionId: number;
-  onClose: React.MouseEventHandler<HTMLButtonElement | HTMLDivElement>;
-}) => {
+const SessionDetails = () => {
   const navigate = useNavigate();
 
-  const setUser = useSetUser();
-  const subscribeSession = useSubscribeSession(params.sessionId);
+  const sessionId = Number.parseInt(useParams().sessionId ?? "");
 
-  const query = useSessionDetails(params.sessionId);
+  const setUser = useSetUser();
+  const subscribeSession = useSubscribeSession(sessionId);
+
+  const query = useSessionDetails(sessionId);
 
   const session = query.data;
 
@@ -61,10 +67,15 @@ const SessionDetails = (params: {
   return (
     <div
       className="fixed bottom-0 left-0 right-0 top-0 bg-black bg-opacity-75"
-      onClick={params.onClose}
+      onClick={() => navigate(-1)}
     >
       <div
         className="absolute bottom-[calc(1rem+var(--safe-area-inset-bottom))] left-[calc(1rem+var(--safe-area-inset-left))] right-[calc(1rem+var(--safe-area-inset-right))] top-[calc(1rem+var(--safe-area-inset-top))] overflow-y-auto bg-white p-4"
+        style={{
+          visibility: useMatch("/timetable/:sessionId/feedback")
+            ? "hidden"
+            : undefined,
+        }}
         onClick={(e) => session && e.stopPropagation()}
       >
         {session ? (
@@ -75,7 +86,7 @@ const SessionDetails = (params: {
               </h3>
               <button
                 className="ml-2 flex-shrink-0 self-start p-2"
-                onClick={params.onClose}
+                onClick={() => navigate(-1)}
               >
                 <Close className="h-4 w-4 text-slate-400" />
               </button>
@@ -110,14 +121,14 @@ const SessionDetails = (params: {
               (session.feedback.some((f) => f.answer) ? (
                 <button
                   className="mb-4 mt-2 w-full rounded border border-bdazzled-700 p-2 text-bdazzled-700"
-                  onClick={() => navigate(`/feedback/${session.id}`)}
+                  onClick={() => navigate("feedback")}
                 >
                   Feedback bearbeiten
                 </button>
               ) : (
                 <button
                   className="mb-4 mt-2 w-full rounded bg-bdazzled-700 p-2 text-white"
-                  onClick={() => navigate(`/feedback/${session.id}`)}
+                  onClick={() => navigate("feedback")}
                 >
                   Feedback geben
                 </button>
@@ -149,6 +160,9 @@ const SessionDetails = (params: {
           />
         )}
       </div>
+      <Routes>
+        <Route path="/feedback" element={<Feedback />} />
+      </Routes>
     </div>
   );
 };

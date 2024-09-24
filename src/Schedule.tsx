@@ -1,6 +1,7 @@
 import moment from "moment";
 import "moment/dist/locale/de";
 import { useEffect, useRef, useState } from "react";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import { QueryStateIndicator } from "./InfoScreen";
 import SessionDetails from "./SessionDetails";
 import TitleBar from "./TitleBar";
@@ -25,6 +26,8 @@ const getSessionCenter = (start: string, end: string) =>
   } * ${hourHeight})`;
 
 function Schedule() {
+  const navigate = useNavigate();
+
   const scrollRefs = useRef<{ [key: string]: HTMLDivElement }>({});
   const scrollElem = useRef<{ elem: HTMLDivElement | null }>({ elem: null });
 
@@ -41,8 +44,6 @@ function Schedule() {
   useEffect(() => {
     setInterval(() => setNowState(moment().format("HH:mm:ss")), 10000);
   }, []);
-
-  const [selectedSession, setSelectedSession] = useState<number | null>(null);
 
   const scheduleQuery = useSchedule();
 
@@ -155,7 +156,7 @@ function Schedule() {
                       }}
                       onClick={
                         s.sessionId !== null
-                          ? () => setSelectedSession(s.sessionId)
+                          ? () => navigate(String(s.sessionId))
                           : undefined
                       }
                       key={s.id}
@@ -201,12 +202,9 @@ function Schedule() {
           </div>
         ))}
       </div>
-      {selectedSession && (
-        <SessionDetails
-          sessionId={selectedSession}
-          onClose={() => setSelectedSession(null)}
-        />
-      )}
+      <Routes>
+        <Route path="/:sessionId/*" element={<SessionDetails />} />
+      </Routes>
     </div>
   );
 }
