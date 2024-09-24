@@ -65,7 +65,7 @@ const TabBar = () => {
   return (
     <div className="pb-safe px-safe row-start-2 flex shrink-0 items-center justify-evenly border-t border-neutral-300 bg-neutral-200">
       <NavButton
-        text="Wiki"
+        text="Infos"
         iconSelected={faLightbulbSolid}
         iconUnselected={faLightbulbOutline}
         target="/wiki"
