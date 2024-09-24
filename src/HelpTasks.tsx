@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import { Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { useSetUser, useUser } from "./appContext";
-import { useHelpTasks, useTakeHelpTask } from "./dataSource";
+import { HelpTask, useHelpTasks, useTakeHelpTask } from "./dataSource";
 import { Close } from "./Icons";
 import { LoadingIndicator, QueryStateIndicator } from "./InfoScreen";
 import TitleBar from "./TitleBar";
@@ -126,8 +126,45 @@ const TaskDetails = () => {
   );
 };
 
-const HelpTasks = () => {
+const Header = (props: { children: React.ReactNode }) => (
+  <div className="sticky top-0 bg-neutral-200 px-4 pb-2 pt-4 text-sm font-semibold text-bdazzled-700">
+    {props.children}
+  </div>
+);
+
+const Task = (props: { task: HelpTask }) => {
+  const task = props.task;
   const navigate = useNavigate();
+  return (
+    <div
+      className="overflow-x-hidden overflow-ellipsis whitespace-nowrap px-4 py-2"
+      onClick={() => navigate(`/helptasks/${task.id}`)}
+    >
+      <div className="text-sm text-neutral-500">
+        {moment(task.startTime).format("dddd, H:mm")} bis{" "}
+        {moment(task.endTime).format("H:mm")} Uhr, {task.location}
+      </div>
+      <div className="text-lg">{task.name}</div>
+      <div
+        className={
+          task.status === "Yours"
+            ? "-mx-1 inline-block rounded-full bg-green-600 px-2 text-sm font-semibold text-white"
+            : "text-sm text-neutral-500"
+        }
+      >
+        {task.status === "Available"
+          ? `${task.slotCount - task.assignedTo.length} von ${task.slotCount} Plätzen frei`
+          : task.status === "Unavailable"
+            ? "Belegt"
+            : task.status === "Yours"
+              ? "Zugewiesen an dich"
+              : `Unbekannt / ${task.status}`}
+      </div>
+    </div>
+  );
+};
+
+const HelpTasks = () => {
   const query = useHelpTasks();
 
   if (!query.data)
@@ -144,27 +181,15 @@ const HelpTasks = () => {
     <div className="grid h-full grid-rows-[auto,1fr]">
       <TitleBar query={query}>Dienste</TitleBar>
       <div className="divide-y divide-neutral-200 overflow-y-scroll bg-white">
+        <Header>Meine Dienste:</Header>
+        {query.data
+          .filter((t) => t.status === "Yours")
+          .map((task) => (
+            <Task key={task.id} task={task} />
+          ))}
+        <Header>Alle Dienste:</Header>
         {query.data.map((task) => (
-          <div
-            key={task.id}
-            className="overflow-x-hidden overflow-ellipsis whitespace-nowrap px-4 py-2"
-            onClick={() => navigate(`/helptasks/${task.id}`)}
-          >
-            <div className="text-sm text-neutral-500">
-              {moment(task.startTime).format("dddd, H:mm")} bis{" "}
-              {moment(task.endTime).format("H:mm")} Uhr, {task.location}
-            </div>
-            <div className="text-lg">{task.name}</div>
-            <div className="text-sm text-neutral-500">
-              {task.status === "Available"
-                ? `${task.slotCount - task.assignedTo.length} von ${task.slotCount} Plätzen frei`
-                : task.status === "Unavailable"
-                  ? "Belegt"
-                  : task.status === "Yours"
-                    ? "Zugewiesen an dich"
-                    : `Unbekannt / ${task.status}`}
-            </div>
-          </div>
+          <Task key={task.id} task={task} />
         ))}
       </div>
       <Routes>
