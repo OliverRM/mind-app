@@ -166,7 +166,7 @@ function Timetable() {
                   .filter((s) => s.day === dayId)
                   .map((s) => (
                     <div
-                      className="pointer-events-none flex flex-col items-center justify-center overflow-visible whitespace-nowrap bg-green-500 bg-opacity-20 text-center text-xs"
+                      className="pointer-events-none flex flex-col items-center justify-center overflow-visible whitespace-pre bg-green-500 bg-opacity-20 text-center text-xs"
                       style={{
                         position: "absolute",
                         top: getSessionCenter(s.timeStart, s.timeEnd),
@@ -182,18 +182,8 @@ function Timetable() {
                       }}
                       key={s.id}
                     >
-                      <div className="font-semibold">
-                        {s.title
-                          .split("\n")
-                          .flatMap((l, i) => (i === 0 ? [l] : [<br />, l]))}
-                      </div>
-                      {s.subtitle !== null && (
-                        <div>
-                          {s.subtitle
-                            .split("\n")
-                            .flatMap((l, i) => (i === 0 ? [l] : [<br />, l]))}
-                        </div>
-                      )}
+                      <div className="font-semibold">{s.title}</div>
+                      {s.subtitle !== null && <div>{s.subtitle}</div>}
                     </div>
                   ))}
                 {/* Current time indicator */}

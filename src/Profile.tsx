@@ -50,7 +50,7 @@ const Profile = () => {
         {data.extraData.map((item) => (
           <Fragment key={item.label}>
             <div className="text-sm text-neutral-500">{item.label}:</div>
-            <div className="mb-2">{item.value}</div>
+            <div className="mb-2 whitespace-pre-wrap">{item.value}</div>
           </Fragment>
         ))}
       </div>
