@@ -4,10 +4,12 @@ import { Fragment, useEffect, useState } from "react";
 import {
   Route,
   Routes,
+  useLocation,
   useMatch,
   useNavigate,
   useParams,
 } from "react-router-dom";
+import { twMerge } from "tailwind-merge";
 import { useSetUser } from "./appContext";
 import {
   type SessionDetails,
@@ -44,21 +46,23 @@ const markdownOptions: MarkdownToJSX.Options = {
 const Registration = (props: { session: SessionDetails }) => {
   const navigate = useNavigate();
   const bookSession = useBookSession(props.session.id);
+  const { book } = useLocation().state as { book: boolean };
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-75"
+      className="p-safe fixed inset-0 flex items-center justify-center bg-black bg-opacity-75"
       onClick={() => navigate(-1)}
     >
       <div
-        className="inset-safe absolute mx-8 my-auto h-64 rounded-xl bg-white p-4"
+        className="max-w-80 rounded-xl bg-white p-4"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="mb-4 mt-8 text-center text-xl font-semibold text-vermilion-700">
-          Anmelden
+          {book ? "Anmeldung" : "Abmeldung"}
         </h2>
         <div className="mb-8">
-          Möchtest du dich für <i>{props.session.title}</i> anmelden?
+          Möchtest du dich für <i>{props.session.title}</i>{" "}
+          {book ? "anmelden" : "abmelden"}?
         </div>
         {bookSession.isPending ? (
           <div className="flex justify-center">
@@ -73,15 +77,18 @@ const Registration = (props: { session: SessionDetails }) => {
               Abbrechen
             </button>
             <button
-              className="ml-2 grow basis-0 rounded bg-bdazzled-700 p-2 text-white"
+              className={twMerge(
+                "ml-2 grow basis-0 rounded p-2 text-white",
+                book ? "bg-bdazzled-700" : "bg-vermilion-700",
+              )}
               onClick={() =>
                 bookSession
-                  .mutateAsync(true)
+                  .mutateAsync(book)
                   .then(() => navigate(-1))
                   .catch((e) => alert(e))
               }
             >
-              Anmelden
+              {book ? "Anmelden" : "Abmelden"}
             </button>
           </div>
         )}
@@ -176,14 +183,26 @@ const SessionDetails = () => {
             {session.changeFlag === "Cancelled" ? (
               <div className="font-semibold text-red-700">Abgesagt</div>
             ) : null}
-            {session.bookable && (
-              <button
-                className="mb-4 mt-2 w-full rounded bg-vermilion-700 p-2 text-white"
-                onClick={() => navigate("register")}
-              >
-                Anmelden
-              </button>
-            )}
+            {session.bookable &&
+              (!session.booked ? (
+                <button
+                  className="mb-4 mt-2 w-full rounded bg-bdazzled-700 p-2 text-white"
+                  onClick={() =>
+                    navigate("register", { state: { book: true } })
+                  }
+                >
+                  Anmelden
+                </button>
+              ) : (
+                <button
+                  className="mb-4 mt-2 w-full rounded bg-vermilion-700 p-2 text-white"
+                  onClick={() =>
+                    navigate("register", { state: { book: false } })
+                  }
+                >
+                  Abmelden
+                </button>
+              ))}
             {session.feedback &&
               feedbackDelay <= 0 &&
               (session.feedback.some((f) => f.answer) ? (

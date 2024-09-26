@@ -82,6 +82,7 @@ export type SessionDetails = {
   location: string | null;
   changeFlag: "None" | "Added" | "Moved" | "Cancelled";
   bookable?: boolean;
+  booked?: boolean;
   subscribed?: boolean;
   feedback?:
     | {
@@ -128,12 +129,12 @@ export const useBookSession = (id: number) => {
         if (r.status === 401) setUser(null);
         if (!r.ok) throw new Error(r.statusText);
       }),
-    onSettled: () => {
+    onSettled: (_data, _error, book: boolean) => {
       queryClient.invalidateQueries({ queryKey: ["schedule"] });
       queryClient.cancelQueries({ queryKey: ["session", id] });
       queryClient.setQueryData(["session", id], (old: SessionDetails) => ({
         ...old,
-        bookable: false,
+        booked: book,
       }));
       queryClient.invalidateQueries({ queryKey: ["session", id] });
     },
