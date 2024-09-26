@@ -2,7 +2,7 @@ import { toCanvas } from "qrcode";
 import { useEffect, useRef } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { useSetUser } from "./appContext";
-import { useProfile } from "./dataSource";
+import { useProfile, useSetPublishName } from "./dataSource";
 import { QueryStateIndicator } from "./InfoScreen";
 import TitleBar from "./TitleBar";
 
@@ -10,6 +10,7 @@ const Profile = () => {
   const query = useProfile(),
     { data } = query;
   const setUser = useSetUser();
+  const setPublishName = useSetPublishName();
 
   const qrCanvas = useRef<HTMLCanvasElement>(null);
 
@@ -47,12 +48,27 @@ const Profile = () => {
       </div>
       <div className="scrollbar-hide col-start-1 row-span-3 row-start-2 grow overflow-y-scroll bg-white p-4 py-4">
         <div className="h-[16rem]" />
-        {data.extraData.map((item) => (
+        {[...data.extraData, ...data.extraData].map((item) => (
           <Fragment key={item.label}>
             <div className="text-sm text-neutral-500">{item.label}:</div>
             <div className="mb-2 whitespace-pre-wrap">{item.value}</div>
           </Fragment>
         ))}
+        <div className="text-sm text-neutral-500">Einstellungen:</div>
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="showName"
+            className="mr-2"
+            checked={data.publishName}
+            onChange={() => setPublishName.mutate(!data.publishName)}
+          />
+          <label htmlFor="showName">
+            Meinen Namen bei Diensten, für die ich mich angemeldet habe, anderen
+            Teilnehmenden anzeigen.
+          </label>
+        </div>
+        <div className="h-24" />
       </div>
       <div className="col-start-1 row-start-4 h-24 border-t border-neutral-300 border-opacity-20 bg-white bg-opacity-80 backdrop-blur-sm">
         <button

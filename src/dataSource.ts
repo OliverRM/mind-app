@@ -235,15 +235,12 @@ export const useTakeHelpTask = (id: number) => {
   return useMutation({
     mutationKey: ["takeHelpTask", id],
     mutationFn: (take: boolean) =>
-      fetch(
-        `${baseUrl}/helpTasks/${id}/${take ? "take?publishName=true" : "release"}`,
-        {
-          method: "POST",
-          headers: new Headers({
-            Authorization: "Bearer " + token,
-          }),
-        },
-      ).then((r) => {
+      fetch(`${baseUrl}/helpTasks/${id}/${take ? "take" : "release"}`, {
+        method: "POST",
+        headers: new Headers({
+          Authorization: "Bearer " + token,
+        }),
+      }).then((r) => {
         if (r.status === 401) setUser(null);
         if (!r.ok) throw new Error(r.statusText);
       }),
@@ -267,6 +264,7 @@ export const useTakeHelpTask = (id: number) => {
 export type Profile = {
   name: string;
   qrCode: string | null;
+  publishName: boolean;
   extraData: { label: string; value: string }[];
 };
 
@@ -287,5 +285,36 @@ export const useProfile = () => {
         if (!r.ok) throw new Error(r.statusText);
         return r.json();
       }),
+  });
+};
+
+export const useSetPublishName = () => {
+  const token = useUser()?.token;
+  const setUser = useSetUser();
+
+  return useMutation({
+    mutationKey: ["publishName"],
+    mutationFn: (publishName: boolean) =>
+      fetch(baseUrl + "/user", {
+        method: "PUT",
+        headers: new Headers({
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        }),
+        body: JSON.stringify({ publishName }),
+      }).then((r) => {
+        if (r.status === 401) setUser(null);
+        if (!r.ok) throw new Error(r.statusText);
+      }),
+    onMutate: async (publishName) => {
+      await queryClient.cancelQueries({ queryKey: [token, "profile"] });
+      queryClient.setQueryData([token, "profile"], (old: Profile) => ({
+        ...old,
+        publishName,
+      }));
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [token, "profile"] });
+    },
   });
 };
