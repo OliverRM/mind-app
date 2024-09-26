@@ -39,7 +39,6 @@ const FeedbackForm = (params: {
         .map((f, i) => (
           <div key={i} className="mt-4">
             <div className="">{f.question}</div>
-            <div className="text-sm text-neutral-500">{f.question}</div>
             {f.type === "string" ? (
               <textarea
                 className="mt-2 h-32 w-full rounded border border-neutral-500 p-2"

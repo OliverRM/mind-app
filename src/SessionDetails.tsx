@@ -112,18 +112,23 @@ const SessionDetails = () => {
   const fDay = (s: string) => moment(s).format("dddd");
   const fTime = (s: string) => moment(s).format("HH:mm");
 
-  const [feedbackDelay, setFeedbackDelay] = useState(
-    session ? new Date(session.startTime).getTime() - Date.now() : Number.NaN,
-  );
+  const feedbackStartTime =
+    session && session.feedback ? new Date(session.startTime).getTime() : null;
+  const [feedbackTime, setFeedbackTime] = useState(new Date().getTime());
+  const canGiveFeedback =
+    feedbackStartTime !== null && feedbackStartTime < feedbackTime;
 
   useEffect(() => {
-    if (feedbackDelay > 0) {
-      const timeout = setTimeout(() => {
-        setFeedbackDelay(0);
-      }, feedbackDelay);
-      return () => clearTimeout(timeout);
+    if (feedbackStartTime === null) return;
+    const now = new Date().getTime();
+    const delay = new Date(feedbackStartTime).getTime() - now;
+    if (delay <= 0) {
+      setFeedbackTime(now);
+      return;
     }
-  }, [feedbackDelay]);
+    const timeout = setTimeout(() => setFeedbackTime(now), delay);
+    return () => clearTimeout(timeout);
+  }, [feedbackStartTime]);
 
   return (
     <div
@@ -204,7 +209,7 @@ const SessionDetails = () => {
                 </button>
               ))}
             {session.feedback &&
-              feedbackDelay <= 0 &&
+              canGiveFeedback &&
               (session.feedback.some((f) => f.answer) ? (
                 <button
                   className="mb-4 mt-2 w-full rounded border border-bdazzled-700 p-2 text-bdazzled-700"
