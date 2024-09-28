@@ -105,7 +105,7 @@ const TaskDetails = () => {
                     : takeHelpTask.mutateAsync(true).catch((e) => alert(e))
                 }
               >
-                Anmelden
+                Übernehmen
               </button>
             ) : task.status === "Yours" ? (
               <button
@@ -114,7 +114,7 @@ const TaskDetails = () => {
                   takeHelpTask.mutateAsync(false).catch((e) => alert(e))
                 }
               >
-                Abmelden
+                Abgeben
               </button>
             ) : null}
           </>
@@ -148,14 +148,18 @@ const Task = (props: { task: HelpTask }) => {
       <div
         className={
           task.status === "Yours"
-            ? "-mx-1 inline-block rounded-full bg-green-600 px-2 text-sm font-semibold text-white"
-            : "text-sm text-neutral-500"
+            ? "-mx-1 inline-block rounded-full bg-vermilion-700 px-2 text-sm font-semibold text-white"
+            : task.status === "Available"
+              ? "-mx-1 inline-block rounded-full bg-bdazzled-700 px-2 text-sm font-semibold text-white"
+              : "text-sm text-neutral-500"
         }
       >
         {task.status === "Available"
-          ? `${task.slotCount - task.assignedTo.length} von ${task.slotCount} Plätzen frei`
+          ? `${task.slotCount - task.assignedTo.length} von ${task.slotCount} ${task.slotCount === 1 ? "Platz" : "Plätzen"} frei`
           : task.status === "Unavailable"
-            ? "Belegt"
+            ? task.slotCount === task.assignedTo.length
+              ? "Vergeben"
+              : "Nicht verfügbar"
             : task.status === "Yours"
               ? "Zugewiesen an dich"
               : `Unbekannt / ${task.status}`}
