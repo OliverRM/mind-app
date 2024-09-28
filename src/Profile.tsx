@@ -48,7 +48,7 @@ const Profile = () => {
       </div>
       <div className="scrollbar-hide col-start-1 row-span-3 row-start-2 grow overflow-y-scroll bg-white p-4 py-4">
         <div className="h-[16rem]" />
-        {[...data.extraData, ...data.extraData].map((item) => (
+        {data.extraData.map((item) => (
           <Fragment key={item.label}>
             <div className="text-sm text-neutral-500">{item.label}:</div>
             <div className="mb-2 whitespace-pre-wrap">{item.value}</div>
