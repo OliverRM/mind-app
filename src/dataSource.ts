@@ -10,16 +10,22 @@ export type Wiki = {
   url: string;
 }[];
 
-export const useWiki = () =>
-  useQuery({
+export const useWiki = () => {
+  const token = useUser()?.token;
+  return useQuery({
     queryKey: ["wiki"],
     queryFn: (): Promise<Wiki> =>
-      fetch(baseUrl + "/documents")
+      fetch(baseUrl + "/documents", {
+        headers: token
+          ? new Headers({ Authorization: "Bearer " + token })
+          : undefined,
+      })
         .then((r) => r.json())
         .then((data: { name: string; url: string }[]) =>
           data.map((a, i) => ({ id: i, ...a })),
         ),
   });
+};
 
 export type SessionPreview = Omit<SessionDetails, "description">;
 
