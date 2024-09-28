@@ -167,19 +167,19 @@ function Schedule() {
                   .filter((s) => s.day === dayId)
                   .map((s) => (
                     <div
-                      className="pointer-events-none flex flex-col items-center justify-center overflow-visible whitespace-pre bg-green-500 bg-opacity-20 text-center text-xs"
+                      className="pointer-events-none absolute flex h-0 w-0 flex-col items-center justify-center overflow-visible whitespace-pre text-center text-xs"
                       style={{
-                        position: "absolute",
                         top: getSessionCenter(s.timeStart, s.timeEnd),
                         left: `calc(${
                           (s.columnStart + s.columnEnd + 1) /
                           (2 * day.columns.length)
                         }* (100% + 1px) - 1px`,
-                        width: 0,
-                        height: 0,
                         color:
                           (s.subscribed && s.textColorHighlighted) ||
                           s.textColor,
+                        textDecoration: s.cancelled
+                          ? "line-through"
+                          : undefined,
                       }}
                       key={s.id}
                     >
